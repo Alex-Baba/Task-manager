@@ -1,0 +1,22 @@
+#backend
+fastapi>=0.135.3
+uvicorn>=0.44.0
+python-multipart>=0.0.24 #for handling file uploads in FastAPI (optional)
+
+#database
+sqlalchemy>=2.0.49
+alembic>=1.18.4
+asyncpg>=0.31.0
+
+#config
+python-dotenv>=1.2.2
+
+#authentication
+passlib[bcrypt]>=1.7.4
+python-jose>=3.5.0
+
+#machine learning
+scikit-learn>=1.8.0
+
+#linting
+ruff>=0.15.9
