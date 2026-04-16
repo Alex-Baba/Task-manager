@@ -1,4 +1,3 @@
-# STRUCTURA PROIECT
+# STRUCTURA PROIECT - Done
 
-Structura initiala a proiectului - Done
-
+# UVICORN SETUP - Done
