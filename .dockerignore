@@ -1,0 +1,38 @@
+# --- VCS / repo metadata ---
+.git/
+.gitignore
+.gitattributes
+.gitlab-ci.yml
+
+# --- Python caches ---
+**/__pycache__/
+**/*.py[cod]
+**/*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.log
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+
+# --- Editor / OS junk ---
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# --- Local env/secrets (Compose reads these from the host) ---
+.env
+.env.*
+*.pem
+*.key
+
+# --- Local docs/artifacts (optional) ---
+# If you rely on README inside the image, remove these.
+*.md
+
