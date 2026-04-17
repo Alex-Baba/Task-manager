@@ -1,7 +1,5 @@
-import uuid
-from sqlalchemy import Column, String, DateTime, ForeignKey
+from sqlalchemy import Column, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
 from .base import Base, BaseModel
 
 class TaskTag(Base, BaseModel):

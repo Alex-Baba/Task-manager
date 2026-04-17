@@ -15,6 +15,3 @@ def read_root():
 async def test_db(db: Annotated[AsyncSession, Depends(get_db)]):
     result = await db.execute(text("SELECT 1"))
     return {"status": "ok", "result": result.scalar()}
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
