@@ -7,3 +7,5 @@
 # ALEMBIC FIRST MIGRATION - Done
 
 # CORE MODELS - Done
+
+# CORE SCHEMAS - Done
