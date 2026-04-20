@@ -36,6 +36,7 @@ class UserRepository:
         where=[User.id == user_id]
         if only_if_changed:
             # Check if any of the provided values are different from the current values in the database
+            # maybe add some allowed fields to ignore for this check in the future
             distinct_users = [getattr(User, k).isdistinct_from(v) for k,v in values.items()]
             # If all provided values are the same as the current values, the update will not be applied
             where.append(or_(*distinct_users))
