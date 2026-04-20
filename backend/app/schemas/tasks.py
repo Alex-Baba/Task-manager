@@ -2,6 +2,8 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
 
+from .common import TimeStamp
+
 class TaskBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -25,6 +27,6 @@ class TaskUpdate(BaseModel):
     category_id: Optional[UUID] = None
     tag_ids: Optional[List[UUID]] = None
 
-class TaskRead(TaskBase):
+class TaskRead(TaskBase, TimeStamp):
     id: UUID
     user_id: UUID

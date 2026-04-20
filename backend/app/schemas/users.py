@@ -2,6 +2,8 @@ from uuid import UUID
 from pydantic import BaseModel, EmailStr, ConfigDict, Field
 from typing import Optional
 
+from .common import TimeStamp
+
 class UserBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -18,5 +20,5 @@ class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     password: Optional[str] = Field(None, min_length=8, max_length=128)
 
-class UserRead(UserBase):
+class UserRead(UserBase, TimeStamp):
     id: UUID

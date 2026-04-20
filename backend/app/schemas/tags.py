@@ -2,6 +2,8 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
+from .common import TimeStamp
+
 class TagBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -15,5 +17,5 @@ class TagUpdate(BaseModel):
 
     name: Optional[str] = None
 
-class TagRead(TagBase):
+class TagRead(TagBase, TimeStamp):
     id: UUID

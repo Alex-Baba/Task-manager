@@ -2,6 +2,8 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
+from .common import TimeStamp
+
 class CategoryBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -15,5 +17,5 @@ class CategoryUpdate(BaseModel):
 
     name: Optional[str] = None
 
-class CategoryRead(CategoryBase):
+class CategoryRead(CategoryBase, TimeStamp):
     id: UUID
