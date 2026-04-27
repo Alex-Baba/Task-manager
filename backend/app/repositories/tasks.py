@@ -1,7 +1,7 @@
 from uuid import UUID
 from typing import Optional
 
-from sqlalchemy import select, update, or_
+from sqlalchemy import select, update, or_, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.tasks import Task
@@ -18,9 +18,9 @@ class TaskRepository:
     async def get_tasks_by_user_id(self, user_id: UUID) -> list[Task]:
         tasks_stmt=select(Task).where(Task.user_id == user_id)
         result=(await self.session.execute(tasks_stmt)).scalars().all()
-        return result
+        return list(result)
 
-    async def create_task(self, task: Task) -> Optional[Task]:
+    async def create_task(self, task: Task) -> Task:
         self.session.add(task)
         await self.session.flush() # Flush to get the ID of the new task
         await self.session.refresh(task) # Refresh to get the updated task with ID
@@ -37,7 +37,7 @@ class TaskRepository:
         if only_if_changed:
             # Check if any of the provided values are different from the current values in the database
             # maybe add some allowed fields to ignore for this check in the future
-            distinct_tasks = [getattr(Task, k).isdistinct_from(v) for k,v in values.items()]
+            distinct_tasks = [getattr(Task, k).is_distinct_from(v) for k,v in values.items()]
             # If all provided values are the same as the current values, the update will not be applied
             where.append(or_(*distinct_tasks))
 
@@ -46,3 +46,12 @@ class TaskRepository:
         result = await self.session.execute(stmt)
         await self.session.flush() # Flush to apply the update
         return result.scalars().first()
+
+    async def delete_task(self, task_id: UUID) -> bool:
+        task=await self.get_task_by_id(task_id)
+        if not task:
+            return False
+        await self.session.delete(task)
+        await self.session.flush()
+        return True
+
