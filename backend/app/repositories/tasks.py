@@ -5,6 +5,7 @@ from sqlalchemy import select, update, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.tasks import Task
+from app.models.tags import Tag
 
 class TaskRepository:
     def __init__(self, session: AsyncSession):
@@ -55,3 +56,32 @@ class TaskRepository:
         await self.session.flush()
         return True
 
+    async def add_tag_to_task(self, task_id: UUID, tag_id: UUID) -> Task | None:
+        task = await self.get_task_by_id(task_id)
+        if not task:
+            return None
+
+        tag = await self.session.get(Tag, tag_id)
+        if not tag:
+            return None
+
+        if tag not in task.tags:
+            task.tags.append(tag)
+            await self.session.flush()
+
+        return task
+
+    async def remove_tag_from_task(self, task_id: UUID, tag_id: UUID) -> Task | None:
+        task = await self.get_task_by_id(task_id)
+        if not task:
+            return None
+
+        tag = await self.session.get(Tag, tag_id)
+        if not tag:
+            return task
+
+        if tag in task.tags:
+            task.tags.remove(tag)
+            await self.session.flush()
+
+        return task

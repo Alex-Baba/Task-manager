@@ -9,3 +9,5 @@
 # CORE MODELS - Done
 
 # CORE SCHEMAS - Done
+
+# CORE CRUD OPERATIONS - Done 

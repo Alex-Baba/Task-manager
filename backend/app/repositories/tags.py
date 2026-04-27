@@ -15,6 +15,14 @@ class TagsRepository:
         result = await self.session.execute(stmt)
         return result.scalars().first()
 
+    async def get_tags(self,name: str | None = None) -> list[Tag]:
+        stmt=select(Tag)
+        if name:
+            stmt=stmt.where(Tag.name.ilike(f"%{name}%") )
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
+
+
     async def create_tag(self, tag: Tag) -> Tag:
         self.session.add(tag)
         await self.session.flush() # Flush to get the ID of the new tag
