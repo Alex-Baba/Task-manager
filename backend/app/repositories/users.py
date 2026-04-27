@@ -46,3 +46,11 @@ class UserRepository:
         result = await self.session.execute(stmt)
         await self.session.flush() # Flush to apply the update
         return result.scalars().first()
+
+    async def delete_user(self, user_id: UUID) -> bool:
+        user=await self.get_user_by_id(user_id)
+        if not user:
+            return False
+        await self.session.delete(user)
+        await self.session.flush()
+        return True
