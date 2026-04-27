@@ -1,17 +1,14 @@
-from fastapi import FastAPI, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import text
-from typing import Annotated
+from fastapi import FastAPI
 
-from app.db.session import get_db
+from app.api.endpoints import users
+from app.api.endpoints import health
 
-app = FastAPI()
+def create_app() -> FastAPI:
+    app = FastAPI()
+    app.include_router(health.router)
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+    app.include_router(users.router)
 
-@app.get("/test-db")
-async def test_db(db: Annotated[AsyncSession, Depends(get_db)]):
-    result = await db.execute(text("SELECT 1"))
-    return {"status": "ok", "result": result.scalar()}
+    return app
+
+app = create_app()

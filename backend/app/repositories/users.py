@@ -20,6 +20,11 @@ class UserRepository:
         result = await self.session.execute(stmt)
         return result.scalars().first()
 
+    async def get_all_users(self) -> list[User]:
+        stmt = select(User).order_by(User.id)
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
+
     async def create_user(self, user: User) -> User:
         self.session.add(user)
         await self.session.flush() # Flush to get the ID of the new user
