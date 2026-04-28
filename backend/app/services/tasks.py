@@ -1,7 +1,7 @@
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import Task, User
+from app.models import Task
 from app.repositories.tasks import TaskRepository
 from app.schemas.tasks import TaskCreate,TaskRead
 

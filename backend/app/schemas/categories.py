@@ -2,6 +2,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
+
 from .common import TimeStamp
 
 class CategoryBase(BaseModel):
