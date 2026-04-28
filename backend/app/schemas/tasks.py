@@ -1,6 +1,7 @@
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
+from datetime import date
 
 from .common import TimeStamp
 
@@ -10,9 +11,11 @@ class TaskBase(BaseModel):
     title: str
     description: Optional[str] = None
     completed: bool = False
-    due_date: Optional[str] = None  # ISO format date string
+    due_date: Optional[date] = None  # ISO format date string
     category_id: Optional[UUID] = None
     tag_ids: Optional[List[UUID]] = None
+    user_id: UUID
+
 
 class TaskCreate(TaskBase):
     pass
@@ -23,9 +26,11 @@ class TaskUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     completed: Optional[bool] = None
-    due_date: Optional[str] = None  # ISO format date string YYYY-MM-DDTHH:MM:SSZ
+    due_date: Optional[date] = None  # ISO format date string YYYY-MM-DDTHH:MM:SSZ
     category_id: Optional[UUID] = None
     tag_ids: Optional[List[UUID]] = None
+    status:Optional[str] = 'pending'
+
 
 class TaskRead(TaskBase, TimeStamp):
     id: UUID

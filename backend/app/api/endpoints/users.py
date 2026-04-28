@@ -12,7 +12,7 @@ router=APIRouter(tags=["Users"])
 @router.post("/users", response_model=UserRead,status_code=status.HTTP_201_CREATED)
 async def create_user(payload: UserCreate, session:Annotated[AsyncSession,Depends(get_session)])->UserRead:
     service=UserService(session)
-    return await service.create_user(payload=payload)
+    return await service.save_user(payload=payload)
 
 @router.get("/all_users", response_model=list[UserRead],status_code=status.HTTP_200_OK)
 async def get_all_users(session:Annotated[AsyncSession,Depends(get_session)]) -> list[UserRead]:

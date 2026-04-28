@@ -20,7 +20,7 @@ class UserService:
         user.password_hash = payload.password.strip()
         return user
 
-    async def create_user(self, payload: UserCreate) -> UserRead:
+    async def save_user(self, payload: UserCreate) -> UserRead:
         user=self.build_user(payload=payload)
         try:
             user=await self.repo.create_user(user)
