@@ -31,7 +31,7 @@ class TaskService:
         return TaskRead.model_validate(task,from_attributes=True)
 
     async def get_task(self,*,task_id: UUID) -> TaskRead:
-        user=await self.repo.get_task_by_id(task_id)
-        if not user:
+        task=await self.repo.get_task_by_id(task_id)
+        if not task:
             raise Exception
-        return TaskRead.model_validate(user,from_attributes=True)
+        return TaskRead.model_validate(task,from_attributes=True)

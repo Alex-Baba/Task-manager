@@ -4,6 +4,7 @@ from app.api.endpoints import users
 from app.api.endpoints import health
 from app.api.endpoints import tasks
 from app.api.endpoints import categories
+from app.api.endpoints import tags
 
 def create_app() -> FastAPI:
     app = FastAPI()
@@ -15,6 +16,8 @@ def create_app() -> FastAPI:
     app.include_router(tasks.router)
 
     app.include_router(categories.router)
+
+    app.include_router(tags.router)
 
     return app
 
