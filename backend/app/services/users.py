@@ -6,6 +6,7 @@ from app.models.users import User
 from app.repositories.users import UserRepository
 
 from app.schemas.users import UserCreate, UserRead, UserUpdate
+from app.schemas.common import Message
 
 class UserService:
     def __init__(self, session: AsyncSession):
@@ -63,10 +64,11 @@ class UserService:
             raise
         return UserRead.model_validate(updated,from_attributes=True)
 
-    async def delete_user(self,*,user_id: UUID) -> None:
+    async def delete_user(self,*,user_id: UUID) -> Message:
         try:
             await self.repo.delete_user(user_id=user_id)
             await self.session.commit()
         except Exception:
             await self.session.rollback()
             raise
+        return Message(message="User deleted successfully")

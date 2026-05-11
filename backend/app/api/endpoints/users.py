@@ -8,6 +8,7 @@ from app.db.session import get_session
 
 from app.schemas.users import UserCreate, UserRead, UserUpdate
 from app.services.users import UserService
+from app.schemas.common import Message
 
 router=APIRouter(tags=["Users"])
 @router.post("/users", response_model=UserRead,status_code=status.HTTP_201_CREATED)
@@ -31,7 +32,7 @@ async def update_user(user_id:uuid.UUID,payload: UserUpdate,session:Annotated[As
     service=UserService(session)
     return await service.update_user(user_id=user_id, payload=payload)
 
-@router.post("/user_delete/{user_id}", response_model=UserRead,status_code=status.HTTP_200_OK)
-async def delete_user(user_id:uuid.UUID,session:Annotated[AsyncSession,Depends(get_session)]) -> None:
+@router.post("/user_delete/{user_id}", response_model=Message,status_code=status.HTTP_200_OK)
+async def delete_user(user_id:uuid.UUID,session:Annotated[AsyncSession,Depends(get_session)]) -> Message:
     service=UserService(session)
     return await service.delete_user(user_id=user_id)
