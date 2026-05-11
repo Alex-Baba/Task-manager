@@ -3,7 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Task
 from app.repositories.tasks import TaskRepository
-from app.schemas.tasks import TaskCreate,TaskRead
+from app.schemas.tasks import TaskCreate,TaskRead, TaskUpdate
+from app.schemas.common import Message
 
 class TaskService:
     def __init__(self,session: AsyncSession):
@@ -19,6 +20,15 @@ class TaskService:
         task.due_date = payload.due_date
 
         return task
+
+    @staticmethod
+    def update_task(*,payload: TaskUpdate) -> dict:
+        data=payload.model_dump(exclude_unset=True)
+        return data
+
+
+
+
 
     async def save_task(self,*,payload: TaskCreate) -> TaskRead:
         task = self.build_task(payload=payload)

@@ -15,21 +15,20 @@ class UserService:
 
     @staticmethod
     def build_user(*,payload: UserCreate) -> User:
-        user=User()
-        user.username = payload.username.strip()
-        user.email = payload.email.strip()
-        user.password_hash = payload.password.strip()
-        return user
+        return User(
+            username=payload.username,
+            email=payload.email,
+            #add hash later
+            password_hash=payload.password,
+        )
 
     @staticmethod
     def build_update_user(*,payload: UserUpdate) -> dict:
-        data=payload.model_dump(exclude_unset=True)
-        if "username" in data:
-            data["username"] = str(data["username"]).strip()
-        if "email" in data:
-            data["email"] = str(data["email"]).strip()
-        if "password_hash" in data:
-            data["password_hash"] = str(data["password_hash"]).strip()
+        data = payload.model_dump(exclude_unset=True)
+
+        #if "password" in data:
+            #data["password_hash"] = hash_password(data.pop("password"))
+
         return data
 
 
