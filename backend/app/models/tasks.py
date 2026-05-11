@@ -14,8 +14,8 @@ class Task(Base, BaseModel):
     due_date = Column(DateTime(timezone=True), nullable=True)
     completed_at = Column(DateTime(timezone=True), nullable=True)
     
-    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
-    user = relationship('User', back_populates='tasks', lazy='selectin')
+    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id',ondelete='CASCADE'), nullable=False)
+    user = relationship('User', back_populates='tasks', lazy='selectin',)
     
     category_id = Column(UUID(as_uuid=True), ForeignKey('categories.id'), nullable=True)
     category = relationship('Categories', back_populates='tasks', lazy='selectin')
