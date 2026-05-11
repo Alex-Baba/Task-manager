@@ -18,7 +18,7 @@ class UserUpdate(BaseModel):
 
     username: Optional[str] = None
     email: Optional[EmailStr] = None
-    password: Optional[str] = Field(None, min_length=8, max_length=128)
+    password_hash: Optional[str] = Field(None, min_length=8, max_length=128)
 
 class UserRead(UserBase, TimeStamp):
     id: UUID
