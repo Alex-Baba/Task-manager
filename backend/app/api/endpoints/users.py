@@ -32,7 +32,7 @@ async def update_user(user_id:uuid.UUID,payload: UserUpdate,session:Annotated[As
     service=UserService(session)
     return await service.update_user(user_id=user_id, payload=payload)
 
-@router.post("/user_delete/{user_id}", response_model=Message,status_code=status.HTTP_200_OK)
+@router.delete("/user_delete/{user_id}", response_model=Message,status_code=status.HTTP_200_OK)
 async def delete_user(user_id:uuid.UUID,session:Annotated[AsyncSession,Depends(get_session)]) -> Message:
     service=UserService(session)
     return await service.delete_user(user_id=user_id)

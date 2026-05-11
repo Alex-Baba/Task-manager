@@ -15,17 +15,18 @@ class UserService:
 
     @staticmethod
     def build_user(*,payload: UserCreate) -> User:
-        return User(
-            username=payload.username,
-            email=payload.email,
-            #add hash later
-            password_hash=payload.password,
-        )
+        user=User()
+        user.username = payload.username
+        user.email = payload.email
+        # add hash later
+        user.password_hash = payload.password
+        return user
 
     @staticmethod
     def build_update_user(*,payload: UserUpdate) -> dict:
         data = payload.model_dump(exclude_unset=True)
 
+        #add hash later
         #if "password" in data:
             #data["password_hash"] = hash_password(data.pop("password"))
 

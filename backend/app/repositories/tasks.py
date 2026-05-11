@@ -62,6 +62,7 @@ class TaskRepository:
             return None
 
         tag = await self.session.get(Tag, tag_id)
+        #add option to create if not existing
         if not tag:
             return None
 

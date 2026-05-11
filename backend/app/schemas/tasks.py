@@ -1,5 +1,5 @@
 from uuid import UUID
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 from typing import Optional, List
 from datetime import date
 
@@ -16,6 +16,11 @@ class TaskBase(BaseModel):
     tag_ids: Optional[List[UUID]] = None
     user_id: UUID
 
+    @field_validator("title", "description", mode="before")
+    @classmethod
+    def strip_strings(cls, value):
+        return value.strip() if isinstance(value, str) else value
+
 
 class TaskCreate(TaskBase):
     pass
@@ -29,8 +34,12 @@ class TaskUpdate(BaseModel):
     due_date: Optional[date] = None  # ISO format date string YYYY-MM-DDTHH:MM:SSZ
     category_id: Optional[UUID] = None
     tag_ids: Optional[List[UUID]] = None
-    status:Optional[str] = 'pending'
+    status:Optional[str] = None
 
+    @field_validator("title", "description", mode="before")
+    @classmethod
+    def strip_strings(cls, value):
+        return value.strip() if isinstance(value, str) else value
 
 class TaskRead(TaskBase, TimeStamp):
     id: UUID
