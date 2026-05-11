@@ -31,4 +31,4 @@ EXPOSE 8000
 # Run migrations in entrypoint then start Uvicorn
 ENTRYPOINT ["/usr/local/bin/app-entrypoint"]
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000","--reload"]
