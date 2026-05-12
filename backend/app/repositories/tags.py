@@ -15,10 +15,16 @@ class TagsRepository:
         result = await self.session.execute(stmt)
         return result.scalars().first()
 
-    async def get_tags(self,name: str | None = None) -> list[Tag]:
+    async def get_all_tags(self) -> list[Tag]:
+        stmt = select(Tag).order_by(Tag.name)
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
+
+    async def get_tags_by_name(self, name: str) -> list[Optional[Tag]]:
+        name=name.strip()
         stmt=select(Tag)
         if name:
-            stmt=stmt.where(Tag.name.ilike(f"%{name}%") )
+            stmt=select(Tag).where(Tag.name.ilike(f"%{name}%") )
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
