@@ -66,9 +66,11 @@ class TaskRepository:
         if not tag:
             return None
 
-        if tag not in task.tags:
-            task.tags.append(tag)
-            await self.session.flush()
+        if tag in task.tags:
+            return task
+
+        task.tags.append(tag)
+        await self.session.flush()
 
         return task
 
