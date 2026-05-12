@@ -27,7 +27,7 @@ async def get_user(user_id:uuid.UUID,session:Annotated[AsyncSession,Depends(get_
     service=UserService(session)
     return await service.get_user(user_id=user_id)
 
-@router.post("/user_update/{user_id}", response_model=UserRead,status_code=status.HTTP_200_OK)
+@router.patch("/user_update/{user_id}", response_model=UserRead,status_code=status.HTTP_200_OK)
 async def update_user(user_id:uuid.UUID,payload: UserUpdate,session:Annotated[AsyncSession,Depends(get_session)])->UserRead:
     service=UserService(session)
     return await service.update_user(user_id=user_id, payload=payload)

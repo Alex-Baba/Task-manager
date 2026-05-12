@@ -27,7 +27,7 @@ async def get_all_tasks_by_user_id(user_id:UUID,session:Annotated[AsyncSession,D
     service = TaskService(session)
     return await service.get_all_tasks_by_user_id(user_id=user_id)
 
-@router.post('/update_task/{task_id}',response_model=TaskRead,status_code=status.HTTP_200_OK)
+@router.patch('/update_task/{task_id}',response_model=TaskRead,status_code=status.HTTP_200_OK)
 async def update_task(task_id:UUID,payload:TaskUpdate,session:Annotated[AsyncSession,Depends(get_session)]) -> TaskRead:
     service = TaskService(session)
     return await service.update_task(task_id=task_id,payload=payload)
