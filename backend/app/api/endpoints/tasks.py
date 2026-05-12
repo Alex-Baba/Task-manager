@@ -8,7 +8,7 @@ from app.db.session import get_session
 
 from app.schemas.tasks import TaskRead, TaskCreate, TaskUpdate
 from app.services.tasks import TaskService
-from schemas.common import Message
+from app.schemas.common import Message
 
 router = APIRouter(tags=['Tasks'])
 
@@ -22,7 +22,7 @@ async def get_task(task_id:UUID,session:Annotated[AsyncSession,Depends(get_sessi
     service = TaskService(session)
     return await service.get_task(task_id=task_id)
 
-@router.get('/get_all_tasks_by_user_id/{user_id}',response_model=TaskRead,status_code=status.HTTP_200_OK)
+@router.get('/get_all_tasks_by_user_id/{user_id}',response_model=list[TaskRead],status_code=status.HTTP_200_OK)
 async def get_all_tasks_by_user_id(user_id:UUID,session:Annotated[AsyncSession,Depends(get_session)]) -> list[TaskRead]:
     service = TaskService(session)
     return await service.get_all_tasks_by_user_id(user_id=user_id)

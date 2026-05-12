@@ -1,7 +1,7 @@
 from uuid import UUID
 from typing import Optional
 
-from sqlalchemy import select, update
+from sqlalchemy import select, update, cast, String
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.categories import Categories, Category
@@ -16,10 +16,15 @@ class CategoriesRepository:
         result = await self.session.execute(stmt)
         return result.scalars().first()
 
-    async def get_category_by_name(self, name: str) -> Optional[Categories]:
-        stmt = select(Categories).where(Categories.name == name)
+    async def get_category_by_name(self, name: str) -> list[Optional[Categories]]:
+        # partial search
+        name = name.strip()
+        # cast from ENUM to string
+        stmt = select(Categories).where(
+            cast(Categories.name, String).ilike(f"%{name}%")
+        )
         result = await self.session.execute(stmt)
-        return result.scalars().first()
+        return list(result.scalars().all())
 
     async def get_all_categories(self) -> list[Categories]:
         stmt = select(Categories)

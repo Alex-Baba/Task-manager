@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Categories
@@ -23,3 +25,11 @@ class CategoryService:
     async def get_categories(self) -> list[CategoryRead]:
         categories=await self.repo.get_all_categories()
         return [CategoryRead.model_validate(category, from_attributes=True) for category in categories]
+
+    async def get_category_by_name(self, name:str) -> list[CategoryRead]:
+        categories=await self.repo.get_category_by_name(name)
+        return [CategoryRead.model_validate(category, from_attributes=True) for category in categories]
+
+    async def get_category_by_id(self, category_id:UUID) -> CategoryRead:
+        categories=await self.repo.get_category_by_id(category_id)
+        return CategoryRead.model_validate(categories, from_attributes=True)
