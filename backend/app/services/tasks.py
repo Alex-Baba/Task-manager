@@ -3,9 +3,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
 from starlette import status
 
-from app.models import Task,Tag
+from app.models import Task,Tag, User
 from app.repositories.tasks import TaskRepository
 from app.repositories.tags import TagsRepository
+from app.repositories.users import UserRepository
 from app.schemas.tasks import TaskCreate,TaskRead, TaskUpdate
 from app.schemas.common import Message
 
@@ -14,6 +15,7 @@ class TaskService:
         self.session = session
         self.repo = TaskRepository(session)
         self.tags_repo = TagsRepository(session)
+        self.user_repo = UserRepository(session)
 
     @staticmethod
     def build_task(*,payload: TaskCreate) -> Task:
@@ -42,6 +44,12 @@ class TaskService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tag not found")
         return tag
 
+    async def _get_user_or_404(self,user_id: UUID) -> User:
+        user=await self.user_repo.get_user_by_id(user_id)
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        return user
+
     async def save_task(self,*,payload: TaskCreate) -> TaskRead:
         task = self.build_task(payload=payload)
         try:
@@ -53,16 +61,16 @@ class TaskService:
         return TaskRead.model_validate(task,from_attributes=True)
 
     async def get_task(self,*,task_id: UUID) -> TaskRead:
-        task=await self.repo.get_task_by_id(task_id)
-        if not task:
-            raise Exception
+        task=await self._get_task_or_404(task_id)
         return TaskRead.model_validate(task,from_attributes=True)
 
     async def get_all_tasks_by_user_id(self,*,user_id: UUID) -> list[TaskRead]:
+        await self._get_user_or_404(user_id)
         tasks=await self.repo.get_tasks_by_user_id(user_id)
         return [TaskRead.model_validate(task,from_attributes=True) for task in tasks]
 
     async def update_task(self,*,task_id: UUID,payload: TaskUpdate) -> TaskRead:
+        await self._get_task_or_404(task_id)
         data=self.build_update_task(payload=payload)
         try:
             updated=await self.repo.update_task(task_id=task_id, **data)
@@ -73,6 +81,7 @@ class TaskService:
         return TaskRead.model_validate(updated,from_attributes=True)
 
     async def delete_task(self,*,task_id: UUID) -> Message:
+        await self._get_task_or_404(task_id)
         try:
             await self.repo.delete_task(task_id=task_id)
             await self.session.commit()

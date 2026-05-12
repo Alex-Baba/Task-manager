@@ -1,7 +1,7 @@
 from uuid import UUID
 from typing import Optional
 
-from sqlalchemy import select, update, or_
+from sqlalchemy import select, update, or_ , delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.tasks import Task
@@ -49,12 +49,11 @@ class TaskRepository:
         return result.scalars().first()
 
     async def delete_task(self, task_id: UUID) -> bool:
-        task=await self.get_task_by_id(task_id)
-        if not task:
-            return False
-        await self.session.delete(task)
-        await self.session.flush()
-        return True
+        stmt = delete(Task).where(Task.id == task_id)
+
+        result = await self.session.execute(stmt)
+
+        return result.rowcount > 0
 
     async def add_tag_to_task(self, task_id: UUID, tag_id: UUID) -> Task | None:
         task = await self.get_task_by_id(task_id)
