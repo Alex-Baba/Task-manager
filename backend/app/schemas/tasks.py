@@ -41,6 +41,13 @@ class TaskUpdate(BaseModel):
     def strip_strings(cls, value):
         return value.strip() if isinstance(value, str) else value
 
+class TagRead(BaseModel):
+    id: UUID
+    name: str
+
+    model_config = ConfigDict(from_attributes=True)
+
 class TaskRead(TaskBase, TimeStamp):
     id: UUID
     user_id: UUID
+    tags: List[TagRead]=[]

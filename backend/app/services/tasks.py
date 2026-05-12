@@ -1,8 +1,11 @@
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import HTTPException
+from starlette import status
 
-from app.models import Task
+from app.models import Task,Tag
 from app.repositories.tasks import TaskRepository
+from app.repositories.tags import TagsRepository
 from app.schemas.tasks import TaskCreate,TaskRead, TaskUpdate
 from app.schemas.common import Message
 
@@ -10,6 +13,7 @@ class TaskService:
     def __init__(self,session: AsyncSession):
         self.session = session
         self.repo = TaskRepository(session)
+        self.tags_repo = TagsRepository(session)
 
     @staticmethod
     def build_task(*,payload: TaskCreate) -> Task:
@@ -25,6 +29,18 @@ class TaskService:
     def build_update_task(*,payload: TaskUpdate) -> dict:
         data=payload.model_dump(exclude_unset=True)
         return data
+
+    async def _get_task_or_404(self,task_id: UUID) -> Task:
+        task=await self.repo.get_task_by_id(task_id)
+        if not task:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+        return task
+
+    async def _get_tag_or_404(self,tag_id: UUID) -> Tag:
+        tag=await self.tags_repo.get_tag_by_id(tag_id)
+        if not tag:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tag not found")
+        return tag
 
     async def save_task(self,*,payload: TaskCreate) -> TaskRead:
         task = self.build_task(payload=payload)
@@ -65,20 +81,31 @@ class TaskService:
             raise
         return Message(message="Task deleted successfully")
 
-    async def add_tag_to_task(self,*,task_id: UUID,tag_id: UUID) -> Task | None:
+    async def add_tag_to_task(self,*,task_id: UUID,tag_id: UUID) -> TaskRead:
+        await self._get_task_or_404(task_id)
+        await self._get_tag_or_404(tag_id)
+
         try:
             await self.repo.add_tag_to_task(task_id=task_id, tag_id=tag_id)
             await self.session.commit()
         except Exception:
             await self.session.rollback()
             raise
-        return await self.repo.get_task_by_id(task_id)
+        task = await self.repo.get_task_by_id(task_id)
 
-    async def remove_tag_from_task(self,*,task_id: UUID,tag_id: UUID) -> Task | None:
+        return TaskRead.model_validate(task, from_attributes=True)
+
+    async def remove_tag_from_task(self,*,task_id: UUID,tag_id: UUID) -> TaskRead:
+        await self._get_task_or_404(task_id)
+        await self._get_tag_or_404(tag_id)
+
         try:
             await self.repo.remove_tag_from_task(task_id=task_id, tag_id=tag_id)
             await self.session.commit()
         except Exception:
             await self.session.rollback()
             raise
-        return await self.repo.get_task_by_id(task_id)
+
+        task = await self.repo.get_task_by_id(task_id)
+
+        return TaskRead.model_validate(task, from_attributes=True)

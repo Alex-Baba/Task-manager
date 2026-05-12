@@ -32,13 +32,13 @@ async def update_task(task_id:UUID,payload:TaskUpdate,session:Annotated[AsyncSes
     service = TaskService(session)
     return await service.update_task(task_id=task_id,payload=payload)
 
-@router.post('/tasks/{task_id}/tag/{tag_id}',response_model=TaskRead | None,status_code=status.HTTP_200_OK)
-async def add_tag_to_task(task_id:UUID,tag_id:UUID,session:Annotated[AsyncSession,Depends(get_session)]) -> TaskRead | None:
+@router.post('/tasks/{task_id}/tag/{tag_id}',response_model=TaskRead,status_code=status.HTTP_200_OK)
+async def add_tag_to_task(task_id:UUID,tag_id:UUID,session:Annotated[AsyncSession,Depends(get_session)]) -> TaskRead:
     service = TaskService(session)
     return await service.add_tag_to_task(task_id=task_id,tag_id=tag_id)
 
-@router.delete('/tasks/{task_id}/tag/{tag_id}',response_model=TaskRead | None,status_code=status.HTTP_200_OK)
-async def remove_tag_from_task(task_id:UUID,tag_id:UUID,session:Annotated[AsyncSession,Depends(get_session)]) -> TaskRead | None:
+@router.delete('/tasks/{task_id}/tag/{tag_id}',response_model=TaskRead,status_code=status.HTTP_200_OK)
+async def remove_tag_from_task(task_id:UUID,tag_id:UUID,session:Annotated[AsyncSession,Depends(get_session)]) -> TaskRead:
     service = TaskService(session)
     return await service.remove_tag_from_task(task_id=task_id,tag_id=tag_id)
 
