@@ -15,6 +15,8 @@
 schema tasks separate tags
 change names of ids in models maybe to be more specific
 admin?
+change tags to be per user
+update models for tasks and tags see other too
 
 task predictions
 id
