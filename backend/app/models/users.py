@@ -13,3 +13,4 @@ class User(Base, BaseModel):
     password_hash = Column(String(128), nullable=False)
 
     tasks = relationship('Task', back_populates='user', lazy='selectin',cascade='all, delete-orphan')
+    tags=relationship('Tag', back_populates='user', lazy='selectin',cascade='all, delete-orphan')

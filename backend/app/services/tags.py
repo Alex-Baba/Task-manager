@@ -12,9 +12,10 @@ class TagService:
         self.repo = TagsRepository(session)
 
     @staticmethod
-    def build_tag(*,payload: TagCreate)->Tag:
+    def build_tag(*,user_id:UUID,payload: TagCreate)->Tag:
         tag = Tag()
         tag.name = payload.name
+        tag.user_id=user_id
 
         return tag
 
@@ -22,8 +23,8 @@ class TagService:
     def build_update_tag(*,payload: TagUpdate)->dict:
         return payload.model_dump(exclude_unset=True)
 
-    async def save_tag(self, payload: TagCreate)->TagRead:
-        tag=self.build_tag(payload=payload)
+    async def save_tag(self,user_id:UUID, payload: TagCreate)->TagRead:
+        tag=self.build_tag(user_id=user_id,payload=payload)
         try:
             tag=await self.repo.create_tag(tag)
             await self.session.commit()
@@ -33,22 +34,22 @@ class TagService:
 
         return TagRead.model_validate(tag,from_attributes=True)
 
-    async def get_all_tags(self)->list[TagRead]:
-        tags=await self.repo.get_all_tags()
+    async def get_all_user_tags(self,user_id:UUID)->list[TagRead]:
+        tags=await self.repo.get_all_user_tags(user_id=user_id)
         return [TagRead.model_validate(tag,from_attributes=True) for tag in tags]
 
-    async def get_tag_by_id(self, tag_id: UUID)->TagRead:
-        tag=await self.repo.get_tag_by_id(tag_id)
+    async def get_tag_by_user_id(self,user_id:UUID, tag_id: UUID)->TagRead:
+        tag=await self.repo.get_tag_by_user_id(user_id,tag_id)
         return TagRead.model_validate(tag,from_attributes=True)
 
-    async def get_tags_by_name(self, name: str) -> list[TagRead]:
-        tags=await self.repo.get_tags_by_name(name)
+    async def get_user_tags_by_name(self,user_id:UUID, name: str) -> list[TagRead]:
+        tags=await self.repo.get_user_tags_by_name(user_id,name)
         return [TagRead.model_validate(tag,from_attributes=True) for tag in tags]
 
-    async def update_tag(self,tag_id:UUID, payload: TagUpdate)->TagRead:
+    async def update_tag(self,user_id:UUID,tag_id:UUID, payload: TagUpdate)->TagRead:
         data=self.build_update_tag(payload=payload)
         try:
-            tag=await self.repo.update_tag(tag_id,**data)
+            tag=await self.repo.update_tag(user_id,tag_id,**data)
             await self.session.commit()
         except Exception:
             await self.session.rollback()
@@ -56,9 +57,9 @@ class TagService:
 
         return TagRead.model_validate(tag,from_attributes=True)
 
-    async def delete_tag(self, tag_id: UUID)->Message:
+    async def delete_tag(self,user_id:UUID, tag_id: UUID)->Message:
         try:
-            tag = await self.repo.get_tag_by_id(tag_id)
+            tag = await self.repo.get_tag_by_user_id(user_id,tag_id)
             await self.session.delete(tag)
             await self.session.commit()
         except Exception:

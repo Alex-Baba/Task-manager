@@ -13,31 +13,31 @@ from app.schemas.common import Message
 router = APIRouter(tags=['Tags'])
 
 @router.post('/create_tags',response_model=TagRead,status_code=status.HTTP_201_CREATED)
-async def create_tag(payload: TagCreate, session: Annotated[AsyncSession,Depends(get_session)])->TagRead:
+async def create_tag(user_id:UUID,payload: TagCreate, session: Annotated[AsyncSession,Depends(get_session)])->TagRead:
     service=TagService(session)
-    return await service.save_tag(payload=payload)
+    return await service.save_tag(user_id=user_id,payload=payload)
 
 @router.get('/all_tags',response_model=list[TagRead],status_code=status.HTTP_200_OK)
-async def get_all_tags(session: Annotated[AsyncSession,Depends(get_session)])->list[TagRead]:
+async def get_all_tags(user_id:UUID,session: Annotated[AsyncSession,Depends(get_session)])->list[TagRead]:
     service=TagService(session)
-    return await service.get_all_tags()
+    return await service.get_all_user_tags(user_id=user_id)
 
 @router.get('/tag_id/{tag_id}',response_model=TagRead,status_code=status.HTTP_200_OK)
-async def get_tag_by_id(tag_id:UUID,session: Annotated[AsyncSession,Depends(get_session)])->TagRead:
+async def get_tag_by_id(user_id:UUID,tag_id:UUID,session: Annotated[AsyncSession,Depends(get_session)])->TagRead:
     service=TagService(session)
-    return await service.get_tag_by_id(tag_id=tag_id)
+    return await service.get_tag_by_user_id(user_id=user_id,tag_id=tag_id)
 
 @router.get('/tag_name/{tag_name}',response_model=list[TagRead],status_code=status.HTTP_200_OK)
-async def get_tag_by_name(tag_name:str,session: Annotated[AsyncSession,Depends(get_session)])->list[TagRead]:
+async def get_tag_by_name(user_id:UUID,tag_name:str,session: Annotated[AsyncSession,Depends(get_session)])->list[TagRead]:
     service=TagService(session)
-    return await service.get_tags_by_name(name=tag_name)
+    return await service.get_user_tags_by_name(user_id=user_id,name=tag_name)
 
 @router.patch('/update_tag/{tag_id}',response_model=TagRead,status_code=status.HTTP_200_OK)
-async def update_tag(tag_id:UUID,payload:TagUpdate,session: Annotated[AsyncSession,Depends(get_session)])->TagRead:
+async def update_tag(user_id:UUID,tag_id:UUID,payload:TagUpdate,session: Annotated[AsyncSession,Depends(get_session)])->TagRead:
     service=TagService(session)
-    return await service.update_tag(tag_id=tag_id,payload=payload)
+    return await service.update_tag(user_id=user_id,tag_id=tag_id,payload=payload)
 
 @router.delete('/delete_tag/{tag_id}',response_model=Message,status_code=status.HTTP_200_OK)
-async def delete_tag(tag_id:UUID,session: Annotated[AsyncSession,Depends(get_session)])->Message:
+async def delete_tag(user_id:UUID,tag_id:UUID,session: Annotated[AsyncSession,Depends(get_session)])->Message:
     service=TagService(session)
-    return await service.delete_tag(tag_id=tag_id)
+    return await service.delete_tag(user_id=user_id,tag_id=tag_id)

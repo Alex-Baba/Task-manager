@@ -15,6 +15,13 @@ class TagCreate(TagBase):
     def strip_name(cls, value):
         return value.strip() if isinstance(value, str) else value
 
+    @field_validator("name")
+    @classmethod
+    def name_not_empty(cls, value):
+        if not value:
+            raise ValueError("Tag name cannot be empty")
+        return value
+
 class TagUpdate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -27,3 +34,4 @@ class TagUpdate(BaseModel):
 
 class TagRead(TagBase, TimeStamp):
     id: UUID
+    user_id:UUID
