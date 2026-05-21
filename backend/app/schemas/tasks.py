@@ -15,6 +15,7 @@ class TaskBase(BaseModel):
     category_id: Optional[UUID] = None
     tag_ids: Optional[List[UUID]] = None
     user_id: UUID
+    manual_priority: Optional[str] = None
 
     @field_validator("title", "description", mode="before")
     @classmethod
@@ -35,6 +36,7 @@ class TaskUpdate(BaseModel):
     category_id: Optional[UUID] = None
     tag_ids: Optional[List[UUID]] = None
     status:Optional[str] = None
+    manual_priority: Optional[str]=None
 
     @field_validator("title", "description", mode="before")
     @classmethod
