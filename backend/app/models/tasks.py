@@ -34,3 +34,5 @@ class Task(Base, BaseModel):
     category = relationship('Categories', back_populates='tasks', lazy='selectin')
 
     tags = relationship('Tag', secondary='task_tags', back_populates='tasks', lazy='selectin')
+
+    predictions= relationship('Prediction', back_populates='tasks',cascade="all, delete-orphan", lazy='selectin')
