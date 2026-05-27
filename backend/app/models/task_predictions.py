@@ -38,5 +38,8 @@ class TaskPredictions(Base, BaseModel):
 
     model_version=Column(String(50), nullable=True)
 
-
-    task=relationship('Task', back_populates='predictions', lazy='selectin')
+    task = relationship(
+        "Task",
+        back_populates="predictions",
+        lazy="selectin",
+    )

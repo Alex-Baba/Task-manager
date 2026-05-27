@@ -35,4 +35,9 @@ class Task(Base, BaseModel):
 
     tags = relationship('Tag', secondary='task_tags', back_populates='tasks', lazy='selectin')
 
-    predictions= relationship('Prediction', back_populates='tasks',cascade="all, delete-orphan", lazy='selectin')
+    predictions = relationship(
+        "TaskPredictions",
+        back_populates="task",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
