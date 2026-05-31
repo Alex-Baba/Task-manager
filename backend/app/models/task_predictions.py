@@ -1,24 +1,10 @@
 import uuid
-from enum import Enum
 from sqlalchemy import Column, ForeignKey, String, Float, Enum as SAEnum, Boolean
 from sqlalchemy.dialects.postgresql import UUID,JSONB
 from sqlalchemy.orm import relationship
+from app.core.enums import CategoryEnum, PriorityEnum
 from .base import Base, BaseModel
 
-class CategoryEnum(str,Enum):
-    WORK = 'WORK'
-    PERSONAL = 'PERSONAL'
-    SHOPPING = 'SHOPPING'
-    HEALTH = 'HEALTH'
-    FINANCE = 'FINANCE'
-    EDUCATION = 'EDUCATION'
-    ENTERTAINMENT = 'ENTERTAINMENT'
-    OTHER = 'OTHER'
-
-class PriorityEnum(str, Enum):
-    LOW = 'LOW'
-    MEDIUM = 'MEDIUM'
-    HIGH = 'HIGH'
 
 class TaskPredictions(Base, BaseModel):
     __tablename__ = 'task_predictions'

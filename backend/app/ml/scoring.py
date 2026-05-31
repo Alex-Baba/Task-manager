@@ -1,4 +1,4 @@
-from app.models.task_predictions import PriorityEnum
+from app.core.enums import PriorityEnum
 from app.ml.keyword_rules import calculate_urgency_score
 from app.ml.utils import calculate_days_until_due
 
