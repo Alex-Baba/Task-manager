@@ -1,20 +1,10 @@
 import uuid
-from enum import Enum
 from sqlalchemy import Column, String, DateTime, ForeignKey, Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
+from app.core.enums import Priority, Status
 from .base import Base, BaseModel
 
-class Status(str,Enum):
-    PENDING = 'PENDING'
-    IN_PROGRESS = 'IN_PROGRESS'
-    COMPLETED = 'COMPLETED'
-    CANCELLED = 'CANCELLED'
-
-class Priority(str, Enum):
-    LOW = 'LOW'
-    MEDIUM = 'MEDIUM'
-    HIGH = 'HIGH'
 
 class Task(Base, BaseModel):
     __tablename__ = 'tasks'
@@ -35,4 +25,9 @@ class Task(Base, BaseModel):
 
     tags = relationship('Tag', secondary='task_tags', back_populates='tasks', lazy='selectin')
 
-    predictions= relationship('Prediction', back_populates='tasks',cascade="all, delete-orphan", lazy='selectin')
+    predictions = relationship(
+        "TaskPredictions",
+        back_populates="task",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )

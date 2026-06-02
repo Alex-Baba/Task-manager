@@ -4,7 +4,7 @@ from app.ml.scoring import calculate_prediction_score
 from app.schemas.task_predictions import PredictionResult
 
 
-MODEL_VERSION = "category_classifier_v1"
+MODEL_VERSION = "task_category_model_datasetv6"
 
 
 def predict_task(task) -> PredictionResult:

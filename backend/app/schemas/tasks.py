@@ -1,55 +1,62 @@
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict, field_validator
 from typing import Optional, List
-from datetime import date
+from datetime import datetime
 
 from .common import TimeStamp
+
+from app.core.enums import Priority, Status
 
 class TaskBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    title: str
     description: Optional[str] = None
-    completed: bool = False
-    due_date: Optional[date] = None  # ISO format date string
+    due_date: Optional[datetime] = None
     category_id: Optional[UUID] = None
     tag_ids: Optional[List[UUID]] = None
-    user_id: UUID
-    manual_priority: Optional[str] = None
-
-    @field_validator("title", "description", mode="before")
-    @classmethod
-    def strip_strings(cls, value):
-        return value.strip() if isinstance(value, str) else value
 
 
 class TaskCreate(TaskBase):
-    pass
-
-class TaskUpdate(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    title: Optional[str] = None
-    description: Optional[str] = None
-    completed: Optional[bool] = None
-    due_date: Optional[date] = None  # ISO format date string YYYY-MM-DDTHH:MM:SSZ
-    category_id: Optional[UUID] = None
-    tag_ids: Optional[List[UUID]] = None
-    status:Optional[str] = None
-    manual_priority: Optional[str]=None
+    title: str
+    user_id: UUID
+    status: Status = Status.PENDING
+    manual_priority: Priority = Priority.LOW
 
     @field_validator("title", "description", mode="before")
     @classmethod
     def strip_strings(cls, value):
         return value.strip() if isinstance(value, str) else value
 
+
+class TaskUpdate(TaskBase):
+    title: Optional[str] = None
+    completed_at: Optional[datetime] = None
+    status: Optional[Status] = None
+    manual_priority: Optional[Priority] = None
+
+    @field_validator("title", "description", mode="before")
+    @classmethod
+    def strip_strings(cls, value):
+        return value.strip() if isinstance(value, str) else value
+
+
 class TagRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     name: str
 
+
+class TaskRead(TimeStamp):
     model_config = ConfigDict(from_attributes=True)
 
-class TaskRead(TaskBase, TimeStamp):
     id: UUID
+    title: str
+    description: Optional[str] = None
+    status: Status
+    manual_priority: Priority
+    due_date: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
     user_id: UUID
-    tags: List[TagRead]=[]
+    category_id: Optional[UUID] = None
+    tags: List[TagRead] = []

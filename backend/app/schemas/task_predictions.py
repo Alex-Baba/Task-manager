@@ -2,7 +2,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Any
 
-from app.models.task_predictions import CategoryEnum,PriorityEnum
+from app.core.enums import CategoryEnum, PriorityEnum
 
 from .common import TimeStamp
 

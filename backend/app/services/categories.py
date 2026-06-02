@@ -13,7 +13,7 @@ class CategoryService:
 
     async def save_category(self, payload: CategoryCreate) -> CategoryRead:
         category=Categories()
-        category.name = payload.name.upper()
+        category.name = payload.name
         try:
             category = await self.repo.create_category(category)
             await self.session.commit()

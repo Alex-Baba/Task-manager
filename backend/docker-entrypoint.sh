@@ -11,6 +11,9 @@ if [ -n "$DATABASE_URL" ]; then
 	else
 		echo "alembic not installed; skipping migrations"
 	fi
+
+	echo "Seeding reference categories..."
+	python scripts/seed_categories.py || echo "category seeding failed"
 fi
 
 exec "$@"

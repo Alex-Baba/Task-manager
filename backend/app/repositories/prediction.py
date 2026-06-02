@@ -11,6 +11,10 @@ class PredictionRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
+    @staticmethod
+    def _user_task_ids(user_id: UUID):
+        return select(Task.id).where(Task.user_id == user_id)
+
     async def create_task_prediction(
         self,
         task_prediction: TaskPredictions,
@@ -30,6 +34,24 @@ class PredictionRepository:
             .where(
                 TaskPredictions.id == prediction_id,
                 Task.user_id == user_id,
+            )
+        )
+
+        result = await self.session.execute(stmt)
+        return result.scalars().first()
+
+    async def get_task_prediction_for_task_by_id(
+        self,
+        user_id: UUID,
+        task_id: UUID,
+        prediction_id: UUID,
+    ) -> TaskPredictions | None:
+        stmt = (
+            select(TaskPredictions)
+            .where(
+                TaskPredictions.id == prediction_id,
+                TaskPredictions.task_id == task_id,
+                TaskPredictions.task_id.in_(self._user_task_ids(user_id)),
             )
         )
 
@@ -73,10 +95,11 @@ class PredictionRepository:
         return list(result.scalars().all())
 
     async def update_task_prediction(
-            self,
-            user_id: UUID,
-            prediction_id: UUID,
-            **values,
+        self,
+        user_id: UUID,
+        task_id: UUID,
+        prediction_id: UUID,
+        **values,
     ) -> TaskPredictions | None:
         values = {
             key: value
@@ -85,61 +108,67 @@ class PredictionRepository:
         }
 
         if not values:
-            return await self.get_task_prediction_by_id(user_id, prediction_id)
+            return await self.get_task_prediction_for_task_by_id(
+                user_id,
+                task_id,
+                prediction_id,
+            )
 
         stmt = (
             update(TaskPredictions)
             .where(
                 TaskPredictions.id == prediction_id,
-                TaskPredictions.task_id.in_(
-                    select(Task.id).where(Task.user_id == user_id)
-                ),
+                TaskPredictions.task_id == task_id,
+                TaskPredictions.task_id.in_(self._user_task_ids(user_id)),
             )
             .values(**values)
             .returning(TaskPredictions)
         )
 
         result = await self.session.execute(stmt)
+        await self.session.flush()
         return result.scalars().first()
 
     async def activate_task_prediction(
         self,
         user_id: UUID,
+        task_id: UUID,
         prediction_id: UUID,
     ) -> TaskPredictions | None:
         stmt = (
             update(TaskPredictions)
             .where(
                 TaskPredictions.id == prediction_id,
-                TaskPredictions.task_id.in_(
-                    select(Task.id).where(Task.user_id == user_id)
-                ),
+                TaskPredictions.task_id == task_id,
+                TaskPredictions.task_id.in_(self._user_task_ids(user_id)),
             )
             .values(is_active=True)
             .returning(TaskPredictions)
         )
 
         result = await self.session.execute(stmt)
+        await self.session.flush()
         return result.scalars().first()
 
     async def deactivate_task_prediction(
         self,
         user_id: UUID,
+        task_id: UUID,
         prediction_id: UUID,
     ) -> TaskPredictions | None:
         stmt = (
             update(TaskPredictions)
             .where(
                 TaskPredictions.id == prediction_id,
-                TaskPredictions.task_id.in_(
-                    select(Task.id).where(Task.user_id == user_id)
-                ),
+                TaskPredictions.task_id == task_id,
+                TaskPredictions.task_id.in_(self._user_task_ids(user_id)),
             )
             .values(is_active=False)
             .returning(TaskPredictions)
         )
 
         result = await self.session.execute(stmt)
+        await self.session.flush()
         return result.scalars().first()
 
     async def deactivate_all_task_predictions(
@@ -151,9 +180,7 @@ class PredictionRepository:
             update(TaskPredictions)
             .where(
                 TaskPredictions.task_id == task_id,
-                TaskPredictions.task_id.in_(
-                    select(Task.id).where(Task.user_id == user_id)
-                ),
+                TaskPredictions.task_id.in_(self._user_task_ids(user_id)),
                 TaskPredictions.is_active.is_(True),
             )
             .values(is_active=False)
@@ -161,22 +188,24 @@ class PredictionRepository:
         )
 
         result = await self.session.execute(stmt)
+        await self.session.flush()
         return list(result.scalars().all())
 
     async def delete_task_prediction(
         self,
         user_id: UUID,
+        task_id: UUID,
         prediction_id: UUID,
     ) -> bool:
         stmt = (
             delete(TaskPredictions)
             .where(
                 TaskPredictions.id == prediction_id,
-                TaskPredictions.task_id.in_(
-                    select(Task.id).where(Task.user_id == user_id)
-                ),
+                TaskPredictions.task_id == task_id,
+                TaskPredictions.task_id.in_(self._user_task_ids(user_id)),
             )
         )
 
         result = await self.session.execute(stmt)
+        await self.session.flush()
         return result.rowcount > 0
