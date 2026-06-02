@@ -1,7 +1,7 @@
 from uuid import UUID
 from typing import Optional
 
-from sqlalchemy import select, update, or_
+from sqlalchemy import delete, select, update, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Tag
@@ -67,9 +67,10 @@ class TagsRepository:
         return result.scalars().first()
 
     async def delete_tag(self,user_id:UUID, tag_id:UUID) -> bool:
-        tag=await self.get_tag_by_id(user_id, tag_id)
-        if not tag:
-            return False
-        await self.session.delete(tag)
+        stmt = delete(Tag).where(
+            Tag.user_id == user_id,
+            Tag.id == tag_id,
+        )
+        result = await self.session.execute(stmt)
         await self.session.flush()
-        return True
+        return result.rowcount > 0

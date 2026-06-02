@@ -1,9 +1,8 @@
 from uuid import UUID
 
-from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette import status
 
+from app.core.exceptions import not_found
 from app.ml.predictor import predict_task
 from app.models.task_predictions import TaskPredictions
 from app.repositories.prediction import PredictionRepository
@@ -26,10 +25,7 @@ class PredictionService:
         task = await self.task_repo.get_task_by_id(task_id)
 
         if not task or task.user_id != user_id:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Task not found",
-            )
+            raise not_found("Task")
 
         return task
 
@@ -48,10 +44,7 @@ class PredictionService:
         )
 
         if not prediction:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Prediction not found",
-            )
+            raise not_found("Prediction")
 
         return prediction
 
@@ -108,10 +101,7 @@ class PredictionService:
         )
 
         if not prediction:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Active prediction not found",
-            )
+            raise not_found("Active prediction")
 
         return TaskPredictionRead.model_validate(prediction, from_attributes=True)
 

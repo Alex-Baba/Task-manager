@@ -1,9 +1,8 @@
 from uuid import UUID
 
-from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette import status
 
+from app.core.exceptions import not_found
 from app.models.admins import Admin
 from app.repositories.admins import AdminRepository
 from app.repositories.users import UserRepository
@@ -20,10 +19,7 @@ class AdminService:
     async def grant_admin(self, *, user_id: UUID) -> AdminRead:
         user = await self.user_repo.get_user_by_id(user_id)
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found",
-            )
+            raise not_found("User")
 
         existing_admin = await self.repo.get_admin_by_user_id(user_id)
         if existing_admin:
@@ -50,9 +46,6 @@ class AdminService:
             raise
 
         if not deleted:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Admin not found",
-            )
+            raise not_found("Admin")
 
         return Message(message="Admin access revoked successfully")

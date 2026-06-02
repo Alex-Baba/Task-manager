@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.admins import Admin
@@ -22,10 +22,7 @@ class AdminRepository:
         return admin
 
     async def delete_admin_by_user_id(self, user_id: UUID) -> bool:
-        admin = await self.get_admin_by_user_id(user_id)
-        if not admin:
-            return False
-
-        await self.session.delete(admin)
+        stmt = delete(Admin).where(Admin.user_id == user_id)
+        result = await self.session.execute(stmt)
         await self.session.flush()
-        return True
+        return result.rowcount > 0

@@ -1,8 +1,7 @@
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import HTTPException
-from starlette import status
 
+from app.core.exceptions import not_found
 from app.models import Task,Tag, User
 from app.repositories.tasks import TaskRepository
 from app.repositories.tags import TagsRepository
@@ -38,31 +37,31 @@ class TaskService:
     async def _get_task_or_404(self,task_id: UUID) -> Task:
         task=await self.repo.get_task_by_id(task_id)
         if not task:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+            raise not_found("Task")
         return task
 
     async def _get_user_task_or_404(self, *, user_id: UUID, task_id: UUID) -> Task:
         task = await self._get_task_or_404(task_id)
         if task.user_id != user_id:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+            raise not_found("Task")
         return task
 
     async def _get_tag_or_404(self,tag_id: UUID) -> Tag:
         tag=await self.tags_repo.get_tag_by_id(tag_id)
         if not tag:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tag not found")
+            raise not_found("Tag")
         return tag
 
     async def _get_user_tag_or_404(self, *, user_id: UUID, tag_id: UUID) -> Tag:
         tag = await self._get_tag_or_404(tag_id)
         if tag.user_id != user_id:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tag not found")
+            raise not_found("Tag")
         return tag
 
     async def _get_user_or_404(self,user_id: UUID) -> User:
         user=await self.user_repo.get_user_by_id(user_id)
         if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+            raise not_found("User")
         return user
 
     async def save_task(self,*, payload: TaskCreate, user_id: UUID) -> TaskRead:

@@ -1,7 +1,7 @@
 from uuid import UUID
 from typing import Optional
 
-from sqlalchemy import select, update, or_
+from sqlalchemy import delete, select, update, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.users import User
@@ -68,9 +68,7 @@ class UserRepository:
         return result.scalars().first()
 
     async def delete_user(self, user_id: UUID) -> bool:
-        user=await self.get_user_by_id(user_id)
-        if not user:
-            return False
-        await self.session.delete(user)
+        stmt = delete(User).where(User.id == user_id)
+        result = await self.session.execute(stmt)
         await self.session.flush()
-        return True
+        return result.rowcount > 0

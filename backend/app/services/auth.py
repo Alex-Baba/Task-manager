@@ -1,7 +1,6 @@
-from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette import status
 
+from app.core.exceptions import invalid_credentials
 from app.core.security import create_access_token, verify_password
 from app.repositories.admins import AdminRepository
 from app.repositories.users import UserRepository
@@ -19,11 +18,7 @@ class AuthService:
         user = await self.user_repo.get_user_by_username_or_email(username_or_email)
 
         if not user or not verify_password(password, user.password_hash):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid credentials",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+            raise invalid_credentials()
 
         return Token(access_token=create_access_token(user.id))
 

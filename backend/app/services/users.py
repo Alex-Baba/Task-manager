@@ -1,9 +1,9 @@
 from uuid import UUID
-from fastapi import HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette import status
 
 
+from app.core.exceptions import conflict, not_found
 from app.models.users import User
 from app.repositories.users import UserRepository
 from app.core.security import hash_password
@@ -39,6 +39,9 @@ class UserService:
         try:
             user=await self.repo.create_user(user)
             await self.session.commit()
+        except IntegrityError:
+            await self.session.rollback()
+            raise conflict("Username or email already exists")
         except Exception:
             await self.session.rollback()
             raise
@@ -48,7 +51,7 @@ class UserService:
     async def get_user(self,*,user_id:UUID) -> UserRead:
         user=await self.repo.get_user_by_id(user_id)
         if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+            raise not_found("User")
         return UserRead.model_validate(user,from_attributes=True)
 
     async def get_all_users(self) -> list[UserRead]:
@@ -61,6 +64,9 @@ class UserService:
         try:
             updated=await self.repo.update_user(user_id=user_id, **data)
             await self.session.commit()
+        except IntegrityError:
+            await self.session.rollback()
+            raise conflict("Username or email already exists")
         except Exception:
             await self.session.rollback()
             raise
@@ -75,5 +81,5 @@ class UserService:
             await self.session.rollback()
             raise
         if not deleted:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+            raise not_found("User")
         return Message(message="User deleted successfully")
