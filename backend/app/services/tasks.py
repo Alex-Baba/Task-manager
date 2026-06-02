@@ -1,6 +1,8 @@
+from datetime import datetime, timezone
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.enums import Status
 from app.core.exceptions import not_found
 from app.models import Task,Tag, User
 from app.repositories.tasks import TaskRepository
@@ -32,6 +34,16 @@ class TaskService:
     @staticmethod
     def build_update_task(*,payload: TaskUpdate) -> dict:
         data=payload.model_dump(exclude_unset=True)
+
+        if data.get("completed_at") is not None and "status" not in data:
+            data["status"] = Status.COMPLETED
+
+        if data.get("status") == Status.COMPLETED and data.get("completed_at") is None:
+            data["completed_at"] = datetime.now(timezone.utc)
+
+        if "status" in data and data["status"] != Status.COMPLETED:
+            data["completed_at"] = None
+
         return data
 
     async def _get_task_or_404(self,task_id: UUID) -> Task:

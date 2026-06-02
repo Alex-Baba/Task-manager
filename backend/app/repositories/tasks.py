@@ -28,8 +28,6 @@ class TaskRepository:
         return task
 
     async def update_task(self, task_id:UUID, only_if_changed:bool=False,**values) -> Optional[Task]:
-        # Remove keys with None values to avoid overwriting existing data with None
-        values={key: value for key, value in values.items() if value is not None}
         if not values:
             return await self.get_task_by_id(task_id)
 

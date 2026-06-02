@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, String, DateTime, ForeignKey, Enum as SAEnum
+from sqlalchemy import CheckConstraint, Column, String, DateTime, ForeignKey, Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from app.core.enums import Priority, Status
@@ -8,6 +8,23 @@ from .base import Base, BaseModel
 
 class Task(Base, BaseModel):
     __tablename__ = 'tasks'
+    __table_args__ = (
+        CheckConstraint("length(trim(title)) > 0", name="ck_tasks_title_not_empty"),
+        CheckConstraint(
+            """
+            (
+                status::text = 'COMPLETED'
+                AND completed_at IS NOT NULL
+            )
+            OR
+            (
+                status::text <> 'COMPLETED'
+                AND completed_at IS NULL
+            )
+            """,
+            name="ck_tasks_completed_at_matches_status",
+        ),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String(255), nullable=False)

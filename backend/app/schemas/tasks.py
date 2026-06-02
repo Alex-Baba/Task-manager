@@ -1,5 +1,5 @@
 from uuid import UUID
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Optional, List
 from datetime import datetime
 
@@ -17,7 +17,7 @@ class TaskBase(BaseModel):
 
 
 class TaskCreate(TaskBase):
-    title: str
+    title: str = Field(min_length=1)
     status: Status = Status.PENDING
     manual_priority: Priority = Priority.LOW
 
@@ -28,7 +28,7 @@ class TaskCreate(TaskBase):
 
 
 class TaskUpdate(TaskBase):
-    title: Optional[str] = None
+    title: Optional[str] = Field(default=None, min_length=1)
     completed_at: Optional[datetime] = None
     status: Optional[Status] = None
     manual_priority: Optional[Priority] = None

@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, DateTime, ForeignKey, String, Float, Enum as SAEnum, Boolean
+from sqlalchemy import Boolean, CheckConstraint, Column, DateTime, Float, ForeignKey, Index, String, Enum as SAEnum, text
 from sqlalchemy.dialects.postgresql import UUID,JSONB
 from sqlalchemy.orm import relationship
 from app.core.enums import CategoryEnum, PriorityEnum
@@ -8,6 +8,26 @@ from .base import Base, BaseModel
 
 class TaskPredictions(Base, BaseModel):
     __tablename__ = 'task_predictions'
+    __table_args__ = (
+        CheckConstraint(
+            "category_confidence >= 0 AND category_confidence <= 1",
+            name="ck_task_predictions_category_confidence_range",
+        ),
+        CheckConstraint(
+            "priority_confidence >= 0 AND priority_confidence <= 1",
+            name="ck_task_predictions_priority_confidence_range",
+        ),
+        CheckConstraint(
+            "smart_score >= 0 AND smart_score <= 1",
+            name="ck_task_predictions_smart_score_range",
+        ),
+        Index(
+            "uq_active_prediction_per_task",
+            "task_id",
+            unique=True,
+            postgresql_where=text("is_active = true"),
+        ),
+    )
 
     id=Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     task_id=Column(UUID(as_uuid=True), ForeignKey('tasks.id', ondelete='CASCADE'), nullable=False,index=True)

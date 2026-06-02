@@ -1,5 +1,5 @@
 from uuid import UUID
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Optional
 
 from .common import TimeStamp
@@ -7,7 +7,7 @@ from .common import TimeStamp
 class TagBase(BaseModel):
     model_config = ConfigDict(from_attributes=True, extra="forbid")
 
-    name: str
+    name: str = Field(min_length=1)
 
 class TagCreate(TagBase):
     @field_validator("name", mode="before")
@@ -25,7 +25,7 @@ class TagCreate(TagBase):
 class TagUpdate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    name: Optional[str] = None
+    name: Optional[str] = Field(default=None, min_length=1)
 
     @field_validator("name", mode="before")
     @classmethod
