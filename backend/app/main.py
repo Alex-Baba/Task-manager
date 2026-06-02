@@ -6,11 +6,17 @@ from app.api.endpoints import tasks
 from app.api.endpoints import categories
 from app.api.endpoints import tags
 from app.api.endpoints import prediction
+from app.api.endpoints import auth
+from app.api.endpoints import admin
 
 def create_app() -> FastAPI:
     app = FastAPI()
 
     app.include_router(health.router)
+
+    app.include_router(auth.router)
+
+    app.include_router(admin.router)
 
     app.include_router(users.router)
 

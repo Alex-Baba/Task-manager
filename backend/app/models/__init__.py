@@ -1,3 +1,4 @@
+from .admins import Admin as Admin
 from .categories import Categories as Categories
 from .tasks import Task as Task
 from .task_tags import TaskTag as TaskTag

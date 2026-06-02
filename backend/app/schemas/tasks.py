@@ -18,7 +18,6 @@ class TaskBase(BaseModel):
 
 class TaskCreate(TaskBase):
     title: str
-    user_id: UUID
     status: Status = Status.PENDING
     manual_priority: Priority = Priority.LOW
 

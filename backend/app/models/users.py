@@ -14,3 +14,10 @@ class User(Base, BaseModel):
 
     tasks = relationship('Task', back_populates='user', lazy='selectin',cascade='all, delete-orphan')
     tags=relationship('Tag', back_populates='user', lazy='selectin',cascade='all, delete-orphan')
+    admin_profile = relationship(
+        'Admin',
+        back_populates='user',
+        lazy='selectin',
+        cascade='all, delete-orphan',
+        uselist=False,
+    )

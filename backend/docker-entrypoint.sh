@@ -13,7 +13,10 @@ if [ -n "$DATABASE_URL" ]; then
 	fi
 
 	echo "Seeding reference categories..."
-	python scripts/seed_categories.py || echo "category seeding failed"
+	python -m scripts.seed_categories || echo "category seeding failed"
+
+	echo "Seeding admin user (if configured)..."
+	python -m scripts.seed_admin || echo "admin seeding failed"
 fi
 
 exec "$@"

@@ -4,13 +4,15 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.dependencies import get_current_user
 from app.db.session import get_session
+from app.models.users import User
 from app.schemas.common import Message
 from app.schemas.task_predictions import PredictionUpdate, TaskPredictionRead
 from app.services.prediction import PredictionService
 
 router = APIRouter(
-    prefix="/users/{user_id}/tasks/{task_id}/predictions",
+    prefix="/tasks/{task_id}/predictions",
     tags=["Predictions"],
 )
 
@@ -21,13 +23,13 @@ router = APIRouter(
     status_code=status.HTTP_201_CREATED,
 )
 async def generate_prediction(
-    user_id: UUID,
     task_id: UUID,
+    current_user: Annotated[User, Depends(get_current_user)],
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> TaskPredictionRead:
     service = PredictionService(session)
     return await service.generate_prediction_for_task(
-        user_id=user_id,
+        user_id=current_user.id,
         task_id=task_id,
     )
 
@@ -38,13 +40,13 @@ async def generate_prediction(
     status_code=status.HTTP_200_OK,
 )
 async def get_active_prediction(
-    user_id: UUID,
     task_id: UUID,
+    current_user: Annotated[User, Depends(get_current_user)],
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> TaskPredictionRead:
     service = PredictionService(session)
     return await service.get_active_prediction_for_task(
-        user_id=user_id,
+        user_id=current_user.id,
         task_id=task_id,
     )
 
@@ -55,13 +57,13 @@ async def get_active_prediction(
     status_code=status.HTTP_200_OK,
 )
 async def get_predictions(
-    user_id: UUID,
     task_id: UUID,
+    current_user: Annotated[User, Depends(get_current_user)],
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> list[TaskPredictionRead]:
     service = PredictionService(session)
     return await service.get_predictions_for_task(
-        user_id=user_id,
+        user_id=current_user.id,
         task_id=task_id,
     )
 
@@ -72,15 +74,15 @@ async def get_predictions(
     status_code=status.HTTP_200_OK,
 )
 async def update_prediction(
-    user_id: UUID,
     task_id: UUID,
     prediction_id: UUID,
     payload: PredictionUpdate,
+    current_user: Annotated[User, Depends(get_current_user)],
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> TaskPredictionRead:
     service = PredictionService(session)
     return await service.update_prediction(
-        user_id=user_id,
+        user_id=current_user.id,
         task_id=task_id,
         prediction_id=prediction_id,
         payload=payload,
@@ -93,14 +95,14 @@ async def update_prediction(
     status_code=status.HTTP_200_OK,
 )
 async def activate_prediction(
-    user_id: UUID,
     task_id: UUID,
     prediction_id: UUID,
+    current_user: Annotated[User, Depends(get_current_user)],
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> TaskPredictionRead:
     service = PredictionService(session)
     return await service.activate_prediction(
-        user_id=user_id,
+        user_id=current_user.id,
         task_id=task_id,
         prediction_id=prediction_id,
     )
@@ -112,14 +114,14 @@ async def activate_prediction(
     status_code=status.HTTP_200_OK,
 )
 async def delete_prediction(
-    user_id: UUID,
     task_id: UUID,
     prediction_id: UUID,
+    current_user: Annotated[User, Depends(get_current_user)],
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> Message:
     service = PredictionService(session)
     return await service.delete_prediction(
-        user_id=user_id,
+        user_id=current_user.id,
         task_id=task_id,
         prediction_id=prediction_id,
     )

@@ -20,6 +20,21 @@ class UserRepository:
         result = await self.session.execute(stmt)
         return result.scalars().first()
 
+    async def get_user_by_username(self, username: str) -> Optional[User]:
+        stmt = select(User).where(User.username == username)
+        result = await self.session.execute(stmt)
+        return result.scalars().first()
+
+    async def get_user_by_username_or_email(self, username_or_email: str) -> Optional[User]:
+        stmt = select(User).where(
+            or_(
+                User.username == username_or_email,
+                User.email == username_or_email,
+            )
+        )
+        result = await self.session.execute(stmt)
+        return result.scalars().first()
+
     async def get_all_users(self) -> list[User]:
         stmt = select(User).order_by(User.id)
         result = await self.session.execute(stmt)

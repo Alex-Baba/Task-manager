@@ -18,6 +18,13 @@ class UserCreate(UserBase):
     def strip_strings(cls, value):
         return value.strip() if isinstance(value, str) else value
 
+    @field_validator("password")
+    @classmethod
+    def validate_bcrypt_password_length(cls, value: str):
+        if len(value.encode("utf-8")) > 72:
+            raise ValueError("Password must be at most 72 bytes")
+        return value
+
 class UserUpdate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -29,6 +36,13 @@ class UserUpdate(BaseModel):
     @classmethod
     def strip_strings(cls, value):
         return value.strip() if isinstance(value, str) else value
+
+    @field_validator("password")
+    @classmethod
+    def validate_bcrypt_password_length(cls, value: Optional[str]):
+        if value is not None and len(value.encode("utf-8")) > 72:
+            raise ValueError("Password must be at most 72 bytes")
+        return value
 
 class UserRead(UserBase, TimeStamp):
     id: UUID
