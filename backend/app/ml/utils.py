@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 
+
 def calculate_days_until_due(due_date) -> int | None:
     if due_date is None:
         return None

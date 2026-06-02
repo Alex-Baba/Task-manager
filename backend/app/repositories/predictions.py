@@ -46,13 +46,10 @@ class PredictionRepository:
         task_id: UUID,
         prediction_id: UUID,
     ) -> TaskPredictions | None:
-        stmt = (
-            select(TaskPredictions)
-            .where(
-                TaskPredictions.id == prediction_id,
-                TaskPredictions.task_id == task_id,
-                TaskPredictions.task_id.in_(self._user_task_ids(user_id)),
-            )
+        stmt = select(TaskPredictions).where(
+            TaskPredictions.id == prediction_id,
+            TaskPredictions.task_id == task_id,
+            TaskPredictions.task_id.in_(self._user_task_ids(user_id)),
         )
 
         result = await self.session.execute(stmt)
@@ -101,11 +98,7 @@ class PredictionRepository:
         prediction_id: UUID,
         **values,
     ) -> TaskPredictions | None:
-        values = {
-            key: value
-            for key, value in values.items()
-            if value is not None
-        }
+        values = {key: value for key, value in values.items() if value is not None}
 
         if not values:
             return await self.get_task_prediction_for_task_by_id(
@@ -197,13 +190,10 @@ class PredictionRepository:
         task_id: UUID,
         prediction_id: UUID,
     ) -> bool:
-        stmt = (
-            delete(TaskPredictions)
-            .where(
-                TaskPredictions.id == prediction_id,
-                TaskPredictions.task_id == task_id,
-                TaskPredictions.task_id.in_(self._user_task_ids(user_id)),
-            )
+        stmt = delete(TaskPredictions).where(
+            TaskPredictions.id == prediction_id,
+            TaskPredictions.task_id == task_id,
+            TaskPredictions.task_id.in_(self._user_task_ids(user_id)),
         )
 
         result = await self.session.execute(stmt)

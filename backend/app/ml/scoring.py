@@ -44,9 +44,7 @@ def calculate_prediction_score(
     deadline_score = calculate_deadline_score(task.due_date)
 
     smart_score = (
-        deadline_score * 0.45
-        + urgency["score"] * 0.35
-        + category_confidence * 0.20
+        deadline_score * 0.45 + urgency["score"] * 0.35 + category_confidence * 0.20
     )
 
     smart_score = round(min(max(smart_score, 0.0), 1.0), 3)

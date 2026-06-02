@@ -9,7 +9,6 @@ KEYWORD_WEIGHTS = {
     "emergency": 0.9,
     "outage": 0.9,
     "production issue": 0.85,
-
     "urgent": 0.75,
     "asap": 0.75,
     "immediately": 0.75,
@@ -18,14 +17,12 @@ KEYWORD_WEIGHTS = {
     "hotfix": 0.65,
     "imediat": 0.75,
     "blocant": 0.7,
-
     "deadline": 0.5,
     "high priority": 0.5,
     "important": 0.3,
     "prioritar": 0.35,
     "cat mai repede": 0.45,
     "cât mai repede": 0.45,
-
     "rapid": 0.25,
     "repede": 0.25,
     "nu merge": 0.5,

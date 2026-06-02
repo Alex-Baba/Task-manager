@@ -7,24 +7,26 @@ from app.core.enums import CategoryEnum, PriorityEnum
 
 from .common import TimeStamp
 
+
 class PredictionBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     predicted_priority: PriorityEnum
     predicted_category: CategoryEnum
 
-    category_confidence: float=Field(ge=0,le=1)
-    priority_confidence: float=Field(ge=0,le=1)
+    category_confidence: float = Field(ge=0, le=1)
+    priority_confidence: float = Field(ge=0, le=1)
 
-    smart_score:float=Field(ge=0,le=1)
+    smart_score: float = Field(ge=0, le=1)
     reasoning: dict[str, Any] | None = None
     model_version: str | None = None
+
 
 class PredictionCreate(PredictionBase):
     task_id: UUID
 
-class PredictionUpdate(BaseModel):
 
+class PredictionUpdate(BaseModel):
     predicted_priority: PriorityEnum | None = None
     predicted_category: CategoryEnum | None = None
 
@@ -39,14 +41,17 @@ class PredictionUpdate(BaseModel):
     applied_priority: bool | None = None
     applied_at: datetime | None = None
 
+
 class PredictionResult(PredictionBase):
     pass
+
 
 class PredictionApply(BaseModel):
     apply_category: bool = False
     apply_priority: bool = False
 
-class TaskPredictionRead(PredictionBase,TimeStamp):
+
+class TaskPredictionRead(PredictionBase, TimeStamp):
     id: UUID
     task_id: UUID
     is_active: bool

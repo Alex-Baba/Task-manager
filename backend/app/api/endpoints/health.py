@@ -7,11 +7,13 @@ from fastapi import APIRouter
 from app.db.session import get_session
 
 
-router=APIRouter(tags=["Health"])
+router = APIRouter(tags=["Health"])
+
 
 @router.get("/health")
 async def health():
     return {"Hello": "App"}
+
 
 @router.get("/test-db")
 async def test_db(db: Annotated[AsyncSession, Depends(get_session)]):

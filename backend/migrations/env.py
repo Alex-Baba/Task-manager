@@ -33,6 +33,7 @@ sync_database_url = url.replace("+asyncpg", "+psycopg2") if "asyncpg" in url els
 
 config.set_main_option("sqlalchemy.url", sync_database_url)
 
+
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 

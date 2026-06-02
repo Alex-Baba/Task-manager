@@ -4,11 +4,13 @@ from typing import Optional
 
 from .common import TimeStamp
 
+
 class UserBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     username: str
     email: EmailStr
+
 
 class UserCreate(UserBase):
     password: str = Field(min_length=8, max_length=128)
@@ -24,6 +26,7 @@ class UserCreate(UserBase):
         if len(value.encode("utf-8")) > 72:
             raise ValueError("Password must be at most 72 bytes")
         return value
+
 
 class UserUpdate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -43,6 +46,7 @@ class UserUpdate(BaseModel):
         if value is not None and len(value.encode("utf-8")) > 72:
             raise ValueError("Password must be at most 72 bytes")
         return value
+
 
 class UserRead(UserBase, TimeStamp):
     id: UUID

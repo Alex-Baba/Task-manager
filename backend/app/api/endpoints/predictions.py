@@ -8,9 +8,13 @@ from app.api.dependencies import get_current_user
 from app.db.session import get_session
 from app.models.users import User
 from app.schemas.common import Message
-from app.schemas.task_predictions import PredictionApply, PredictionUpdate, TaskPredictionRead
+from app.schemas.task_predictions import (
+    PredictionApply,
+    PredictionUpdate,
+    TaskPredictionRead,
+)
 from app.schemas.tasks import TaskRead
-from app.services.prediction import PredictionService
+from app.services.predictions import PredictionService
 
 router = APIRouter(
     prefix="/tasks/{task_id}/predictions",

@@ -42,8 +42,11 @@ class CategoriesRepository:
         await self.session.refresh(category)
         return category
 
-    async def update_category(self, category_id: UUID, new_category: Category) -> Optional[Categories]:
-        stmt = update(Categories).where(Categories.id == category_id).values(new_category)
+    async def update_category(
+        self, category_id: UUID, new_category: Category
+    ) -> Optional[Categories]:
+        stmt = (
+            update(Categories).where(Categories.id == category_id).values(new_category)
+        )
         result = await self.session.execute(stmt)
         return result.scalars().first()
-

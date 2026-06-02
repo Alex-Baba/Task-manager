@@ -7,6 +7,7 @@ from .common import TimeStamp
 
 from app.core.enums import Priority, Status
 
+
 class TaskBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

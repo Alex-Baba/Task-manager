@@ -8,7 +8,7 @@ from app.core.exceptions import bad_request, not_found
 from app.ml.predictor import predict_task
 from app.models.task_predictions import TaskPredictions
 from app.repositories.categories import CategoriesRepository
-from app.repositories.prediction import PredictionRepository
+from app.repositories.predictions import PredictionRepository
 from app.repositories.tasks import TaskRepository
 from app.schemas.common import Message
 from app.schemas.task_predictions import (
