@@ -26,6 +26,11 @@ class CategoriesRepository:
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
+    async def get_category_by_exact_name(self, name: Category) -> Optional[Categories]:
+        stmt = select(Categories).where(Categories.name == name)
+        result = await self.session.execute(stmt)
+        return result.scalars().first()
+
     async def get_all_categories(self) -> list[Categories]:
         stmt = select(Categories)
         result = await self.session.execute(stmt)

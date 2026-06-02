@@ -1,6 +1,7 @@
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Any
+from datetime import datetime
 
 from app.core.enums import CategoryEnum, PriorityEnum
 
@@ -34,11 +35,21 @@ class PredictionUpdate(BaseModel):
     reasoning: dict[str, Any] | None = None
     model_version: str | None = None
     is_active: bool | None = None
+    applied_category: bool | None = None
+    applied_priority: bool | None = None
+    applied_at: datetime | None = None
 
 class PredictionResult(PredictionBase):
     pass
+
+class PredictionApply(BaseModel):
+    apply_category: bool = False
+    apply_priority: bool = False
 
 class TaskPredictionRead(PredictionBase,TimeStamp):
     id: UUID
     task_id: UUID
     is_active: bool
+    applied_category: bool
+    applied_priority: bool
+    applied_at: datetime | None = None

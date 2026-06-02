@@ -1,18 +1,23 @@
+from datetime import datetime, timezone
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.exceptions import not_found
+from app.core.enums import Category
+from app.core.exceptions import bad_request, not_found
 from app.ml.predictor import predict_task
 from app.models.task_predictions import TaskPredictions
+from app.repositories.categories import CategoriesRepository
 from app.repositories.prediction import PredictionRepository
 from app.repositories.tasks import TaskRepository
 from app.schemas.common import Message
 from app.schemas.task_predictions import (
+    PredictionApply,
     PredictionCreate,
     PredictionUpdate,
     TaskPredictionRead,
 )
+from app.schemas.tasks import TaskRead
 
 
 class PredictionService:
@@ -20,6 +25,7 @@ class PredictionService:
         self.session = session
         self.repo = PredictionRepository(session)
         self.task_repo = TaskRepository(session)
+        self.category_repo = CategoriesRepository(session)
 
     async def _get_task_or_404(self, *, user_id: UUID, task_id: UUID):
         task = await self.task_repo.get_task_by_id(task_id)
@@ -157,36 +163,6 @@ class PredictionService:
 
         return TaskPredictionRead.model_validate(prediction, from_attributes=True)
 
-    async def activate_prediction(
-        self,
-        *,
-        user_id: UUID,
-        task_id: UUID,
-        prediction_id: UUID,
-    ) -> TaskPredictionRead:
-        await self._get_prediction_for_task_or_404(
-            user_id=user_id,
-            task_id=task_id,
-            prediction_id=prediction_id,
-        )
-
-        try:
-            await self.repo.deactivate_all_task_predictions(
-                user_id=user_id,
-                task_id=task_id,
-            )
-            prediction = await self.repo.activate_task_prediction(
-                user_id=user_id,
-                task_id=task_id,
-                prediction_id=prediction_id,
-            )
-            await self.session.commit()
-        except Exception:
-            await self.session.rollback()
-            raise
-
-        return TaskPredictionRead.model_validate(prediction, from_attributes=True)
-
     async def delete_prediction(
         self,
         *,
@@ -212,3 +188,56 @@ class PredictionService:
             raise
 
         return Message(message="Prediction deleted successfully")
+
+    async def apply_prediction(
+        self,
+        *,
+        user_id: UUID,
+        task_id: UUID,
+        prediction_id: UUID,
+        payload: PredictionApply,
+    ) -> TaskRead:
+        if not payload.apply_category and not payload.apply_priority:
+            raise bad_request("Choose at least one prediction field to apply")
+
+        prediction = await self._get_prediction_for_task_or_404(
+            user_id=user_id,
+            task_id=task_id,
+            prediction_id=prediction_id,
+        )
+        values = {}
+
+        if payload.apply_category:
+            category = await self.category_repo.get_category_by_exact_name(
+                Category(prediction.predicted_category.value)
+            )
+            if not category:
+                raise not_found("Category")
+
+            values["category_id"] = category.id
+
+        if payload.apply_priority:
+            values["manual_priority"] = prediction.predicted_priority
+
+        prediction_values = {
+            "applied_at": datetime.now(timezone.utc),
+        }
+        if payload.apply_category:
+            prediction_values["applied_category"] = True
+        if payload.apply_priority:
+            prediction_values["applied_priority"] = True
+
+        try:
+            task = await self.task_repo.update_task(task_id=task_id, **values)
+            await self.repo.update_task_prediction(
+                user_id=user_id,
+                task_id=task_id,
+                prediction_id=prediction_id,
+                **prediction_values,
+            )
+            await self.session.commit()
+        except Exception:
+            await self.session.rollback()
+            raise
+
+        return TaskRead.model_validate(task, from_attributes=True)

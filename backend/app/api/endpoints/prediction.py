@@ -8,7 +8,8 @@ from app.api.dependencies import get_current_user
 from app.db.session import get_session
 from app.models.users import User
 from app.schemas.common import Message
-from app.schemas.task_predictions import PredictionUpdate, TaskPredictionRead
+from app.schemas.task_predictions import PredictionApply, PredictionUpdate, TaskPredictionRead
+from app.schemas.tasks import TaskRead
 from app.services.prediction import PredictionService
 
 router = APIRouter(
@@ -90,21 +91,23 @@ async def update_prediction(
 
 
 @router.post(
-    "/{prediction_id}/activate",
-    response_model=TaskPredictionRead,
+    "/{prediction_id}/apply",
+    response_model=TaskRead,
     status_code=status.HTTP_200_OK,
 )
-async def activate_prediction(
+async def apply_prediction(
     task_id: UUID,
     prediction_id: UUID,
+    payload: PredictionApply,
     current_user: Annotated[User, Depends(get_current_user)],
     session: Annotated[AsyncSession, Depends(get_session)],
-) -> TaskPredictionRead:
+) -> TaskRead:
     service = PredictionService(session)
-    return await service.activate_prediction(
+    return await service.apply_prediction(
         user_id=current_user.id,
         task_id=task_id,
         prediction_id=prediction_id,
+        payload=payload,
     )
 
 

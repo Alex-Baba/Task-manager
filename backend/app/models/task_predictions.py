@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, ForeignKey, String, Float, Enum as SAEnum, Boolean
+from sqlalchemy import Column, DateTime, ForeignKey, String, Float, Enum as SAEnum, Boolean
 from sqlalchemy.dialects.postgresql import UUID,JSONB
 from sqlalchemy.orm import relationship
 from app.core.enums import CategoryEnum, PriorityEnum
@@ -12,6 +12,9 @@ class TaskPredictions(Base, BaseModel):
     id=Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     task_id=Column(UUID(as_uuid=True), ForeignKey('tasks.id', ondelete='CASCADE'), nullable=False,index=True)
     is_active = Column(Boolean, default=True, nullable=False)
+    applied_category = Column(Boolean, default=False, nullable=False)
+    applied_priority = Column(Boolean, default=False, nullable=False)
+    applied_at = Column(DateTime(timezone=True), nullable=True)
 
     predicted_priority=Column(SAEnum(PriorityEnum), nullable=False)
     predicted_category=Column(SAEnum(CategoryEnum), nullable=False)
