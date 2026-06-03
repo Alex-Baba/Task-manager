@@ -52,8 +52,8 @@ class TaskPredictions(Base, BaseModel):
     applied_priority = Column(Boolean, default=False, nullable=False)
     applied_at = Column(DateTime(timezone=True), nullable=True)
 
-    predicted_priority = Column(SAEnum(PriorityEnum), nullable=False)
-    predicted_category = Column(SAEnum(CategoryEnum), nullable=False)
+    predicted_priority = Column(SAEnum(PriorityEnum, name="priority"), nullable=False)
+    predicted_category = Column(SAEnum(CategoryEnum, name="category"), nullable=False)
 
     category_confidence = Column(Float, default=0.0, nullable=False)
     priority_confidence = Column(Float, default=0.0, nullable=False)

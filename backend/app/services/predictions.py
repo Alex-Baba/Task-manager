@@ -3,7 +3,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.enums import Category
+from app.core.enums import CategoryEnum
 from app.core.exceptions import bad_request, not_found
 from app.ml.predictor import predict_task
 from app.models.task_predictions import TaskPredictions
@@ -209,7 +209,7 @@ class PredictionService:
 
         if payload.apply_category:
             category = await self.category_repo.get_category_by_exact_name(
-                Category(prediction.predicted_category.value)
+                CategoryEnum(prediction.predicted_category.value)
             )
             if not category:
                 raise not_found("Category")

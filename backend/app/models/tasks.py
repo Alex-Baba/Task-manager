@@ -9,7 +9,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from app.core.enums import Priority, Status
+from app.core.enums import PriorityEnum, Status
 from .base import Base, BaseModel
 
 
@@ -36,8 +36,16 @@ class Task(Base, BaseModel):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String(255), nullable=False)
     description = Column(String(1024), nullable=True)
-    status = Column(SAEnum(Status), default=Status.PENDING, nullable=False)
-    manual_priority = Column(SAEnum(Priority), default=Priority.LOW, nullable=False)
+    status = Column(
+        SAEnum(Status, name="status"),
+        default=Status.PENDING,
+        nullable=False,
+    )
+    manual_priority = Column(
+        SAEnum(PriorityEnum, name="priority"),
+        default=PriorityEnum.LOW,
+        nullable=False,
+    )
     due_date = Column(DateTime(timezone=True), nullable=True)
     completed_at = Column(DateTime(timezone=True), nullable=True)
 

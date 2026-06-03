@@ -2,7 +2,7 @@ import asyncio
 
 from sqlalchemy import select
 
-from app.core.enums import Category
+from app.core.enums import CategoryEnum
 from app.db.session import SessionLocal, engine
 from app.models.categories import Categories
 
@@ -13,7 +13,7 @@ async def seed_categories() -> None:
         existing_categories = set(result.scalars().all())
 
         missing_categories = []
-        for category in Category:
+        for category in CategoryEnum:
             if category in existing_categories:
                 continue
 

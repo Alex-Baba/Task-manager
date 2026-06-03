@@ -2,7 +2,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
-from app.core.enums import Category
+from app.core.enums import CategoryEnum
 
 from .common import TimeStamp
 
@@ -10,7 +10,7 @@ from .common import TimeStamp
 class CategoryBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    name: Category
+    name: CategoryEnum
 
 
 class CategoryCreate(CategoryBase):
@@ -20,7 +20,7 @@ class CategoryCreate(CategoryBase):
 class CategoryUpdate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    name: Optional[Category] = None
+    name: Optional[CategoryEnum] = None
 
 
 class CategoryRead(CategoryBase, TimeStamp):

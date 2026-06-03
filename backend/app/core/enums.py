@@ -8,23 +8,6 @@ class Status(str, Enum):
     CANCELLED = "CANCELLED"
 
 
-class Priority(str, Enum):
-    LOW = "LOW"
-    MEDIUM = "MEDIUM"
-    HIGH = "HIGH"
-
-
-class Category(str, Enum):
-    WORK = "WORK"
-    PERSONAL = "PERSONAL"
-    SHOPPING = "SHOPPING"
-    HEALTH = "HEALTH"
-    FINANCE = "FINANCE"
-    EDUCATION = "EDUCATION"
-    ENTERTAINMENT = "ENTERTAINMENT"
-    OTHER = "OTHER"
-
-
 class CategoryEnum(str, Enum):
     WORK = "WORK"
     PERSONAL = "PERSONAL"

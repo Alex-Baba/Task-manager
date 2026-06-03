@@ -4,7 +4,8 @@ from typing import Optional
 from sqlalchemy import select, update, cast, String
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.categories import Categories, Category
+from app.core.enums import CategoryEnum
+from app.models.categories import Categories
 
 
 class CategoriesRepository:
@@ -26,7 +27,9 @@ class CategoriesRepository:
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
-    async def get_category_by_exact_name(self, name: Category) -> Optional[Categories]:
+    async def get_category_by_exact_name(
+        self, name: CategoryEnum
+    ) -> Optional[Categories]:
         stmt = select(Categories).where(Categories.name == name)
         result = await self.session.execute(stmt)
         return result.scalars().first()
@@ -43,10 +46,13 @@ class CategoriesRepository:
         return category
 
     async def update_category(
-        self, category_id: UUID, new_category: Category
+        self, category_id: UUID, new_category: CategoryEnum
     ) -> Optional[Categories]:
         stmt = (
-            update(Categories).where(Categories.id == category_id).values(new_category)
+            update(Categories)
+            .where(Categories.id == category_id)
+            .values(name=new_category)
+            .returning(Categories)
         )
         result = await self.session.execute(stmt)
         return result.scalars().first()

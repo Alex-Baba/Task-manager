@@ -59,15 +59,9 @@ class TaskService:
             raise not_found("Task")
         return task
 
-    async def _get_tag_or_404(self, tag_id: UUID) -> Tag:
-        tag = await self.tags_repo.get_tag_by_id(tag_id)
-        if not tag:
-            raise not_found("Tag")
-        return tag
-
     async def _get_user_tag_or_404(self, *, user_id: UUID, tag_id: UUID) -> Tag:
-        tag = await self._get_tag_or_404(tag_id)
-        if tag.user_id != user_id:
+        tag = await self.tags_repo.get_tag_by_user_id(user_id, tag_id)
+        if not tag:
             raise not_found("Tag")
         return tag
 

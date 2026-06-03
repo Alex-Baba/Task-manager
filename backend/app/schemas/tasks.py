@@ -5,7 +5,7 @@ from datetime import datetime
 
 from .common import TimeStamp
 
-from app.core.enums import Priority, Status
+from app.core.enums import PriorityEnum, Status
 
 
 class TaskBase(BaseModel):
@@ -20,7 +20,7 @@ class TaskBase(BaseModel):
 class TaskCreate(TaskBase):
     title: str = Field(min_length=1)
     status: Status = Status.PENDING
-    manual_priority: Priority = Priority.LOW
+    manual_priority: PriorityEnum = PriorityEnum.LOW
 
     @field_validator("title", "description", mode="before")
     @classmethod
@@ -32,7 +32,7 @@ class TaskUpdate(TaskBase):
     title: Optional[str] = Field(default=None, min_length=1)
     completed_at: Optional[datetime] = None
     status: Optional[Status] = None
-    manual_priority: Optional[Priority] = None
+    manual_priority: Optional[PriorityEnum] = None
 
     @field_validator("title", "description", mode="before")
     @classmethod
@@ -54,7 +54,7 @@ class TaskRead(TimeStamp):
     title: str
     description: Optional[str] = None
     status: Status
-    manual_priority: Priority
+    manual_priority: PriorityEnum
     due_date: Optional[datetime] = None
     completed_at: Optional[datetime] = None
     user_id: UUID
