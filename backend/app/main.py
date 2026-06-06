@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.endpoints import users
 from app.api.endpoints import health
@@ -8,10 +9,20 @@ from app.api.endpoints import tags
 from app.api.endpoints import predictions
 from app.api.endpoints import auth
 from app.api.endpoints import admin
+from app.core import get_config
 
 
 def create_app() -> FastAPI:
     app = FastAPI()
+    config = get_config()
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=config.cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     app.include_router(health.router)
 

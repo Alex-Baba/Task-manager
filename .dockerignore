@@ -11,7 +11,19 @@
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.coverage
+htmlcov/
+coverage/
 *.log
+
+# --- Node / frontend artifacts ---
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/.vite/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
 
 # --- Virtual environments ---
 .venv/
@@ -29,10 +41,9 @@ Thumbs.db
 # --- Local env/secrets (Compose reads these from the host) ---
 .env
 .env.*
+**/.env
+**/.env.*
+!**/.env.example
 *.pem
 *.key
-
-# --- Local docs/artifacts (optional) ---
-# If you rely on README inside the image, remove these.
-*.md
 

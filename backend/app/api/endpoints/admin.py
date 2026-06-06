@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import get_current_admin
 from app.db.session import get_session
-from app.schemas.admins import AdminRead
+from app.schemas.admins import AdminRead, AdminUserRead
 from app.schemas.categories import CategoryCreate, CategoryRead
 from app.schemas.common import Message
 from app.schemas.users import UserRead
@@ -21,12 +21,16 @@ router = APIRouter(
 )
 
 
-@router.get("/users", response_model=list[UserRead], status_code=status.HTTP_200_OK)
+@router.get(
+    "/users",
+    response_model=list[AdminUserRead],
+    status_code=status.HTTP_200_OK,
+)
 async def get_all_users(
     session: Annotated[AsyncSession, Depends(get_session)],
-) -> list[UserRead]:
-    service = UserService(session)
-    return await service.get_all_users()
+) -> list[AdminUserRead]:
+    service = AdminService(session)
+    return await service.get_users_with_admin_status()
 
 
 @router.get("/users/{user_id}", response_model=UserRead, status_code=status.HTTP_200_OK)

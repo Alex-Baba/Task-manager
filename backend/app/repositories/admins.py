@@ -15,6 +15,11 @@ class AdminRepository:
         result = await self.session.execute(stmt)
         return result.scalars().first()
 
+    async def get_admin_user_ids(self) -> set[UUID]:
+        stmt = select(Admin.user_id)
+        result = await self.session.execute(stmt)
+        return set(result.scalars().all())
+
     async def create_admin(self, admin: Admin) -> Admin:
         self.session.add(admin)
         await self.session.flush()

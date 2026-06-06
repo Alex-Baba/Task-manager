@@ -43,6 +43,7 @@ TEST_DATABASE_URL=postgresql+asyncpg://<db_user>:<db_password>@<db_host>:5432/<t
 SECRET_KEY=change-this-value
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
+CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 
 ADMIN_EMAIL=<admin_email>
 ADMIN_USERNAME=<admin_username>
@@ -200,3 +201,60 @@ GET  /tasks/{task_id}/predictions/active
 GET  /tasks/{task_id}/predictions
 POST /tasks/{task_id}/predictions/{prediction_id}/apply
 ```
+
+## ML Model Details
+
+The category prediction model was trained in this Kaggle notebook:
+
+```text
+https://www.kaggle.com/code/alexandruionutbaba/task-category-classification
+```
+
+The trained model uses a scikit-learn pipeline:
+
+```python
+model = Pipeline([
+    ("features", FeatureUnion([
+        ("word", TfidfVectorizer(
+            lowercase=True,
+            strip_accents="unicode",
+            analyzer="word",
+            ngram_range=(1, 2),
+            min_df=1,
+            max_df=0.95,
+            sublinear_tf=True,
+        )),
+        ("char", TfidfVectorizer(
+            lowercase=True,
+            strip_accents="unicode",
+            analyzer="char_wb",
+            ngram_range=(3, 5),
+            min_df=1,
+            max_df=0.95,
+            sublinear_tf=True,
+        )),
+    ])),
+    ("classifier", LogisticRegression(
+        max_iter=3000,
+        class_weight="balanced",
+        C=2.0,
+        random_state=42,
+    )),
+])
+```
+
+The feature union combines:
+
+- word TF-IDF n-grams from 1 to 2 words, useful for task phrases such as
+  `pay rent`, `doctor appointment`, or `buy groceries`
+- character TF-IDF n-grams from 3 to 5 characters, useful for short task text,
+  fragments, typos, and informal wording
+
+The Logistic Regression classifier uses `class_weight="balanced"` to reduce bias
+toward categories with more training examples. The backend loads the trained
+model in the ML layer and uses it when generating task predictions.
+
+Priority is handled as part of the application scoring logic. The backend combines
+task text, deadline proximity, urgency keywords, and category confidence to
+produce a suggested priority, confidence values, a smart score, and reasoning for
+the user-facing prediction card.

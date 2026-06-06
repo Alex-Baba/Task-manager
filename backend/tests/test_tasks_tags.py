@@ -52,6 +52,34 @@ async def test_user_can_create_tag_and_attach_it_to_task(client, auth_headers_fa
     ]
 
 
+async def test_user_can_create_task_with_existing_tags(client, auth_headers_factory):
+    headers, _ = await auth_headers_factory("taskwithtags")
+    tag_response = await client.post(
+        "/tags",
+        json={"name": "backend"},
+        headers=headers,
+    )
+
+    response = await client.post(
+        "/tasks",
+        json={
+            "title": "Wire frontend task form",
+            "manual_priority": "MEDIUM",
+            "tag_ids": [tag_response.json()["id"]],
+        },
+        headers=headers,
+    )
+
+    assert response.status_code == 201
+    assert response.json()["manual_priority"] == "MEDIUM"
+    assert response.json()["tags"] == [
+        {
+            "id": tag_response.json()["id"],
+            "name": "backend",
+        }
+    ]
+
+
 async def test_users_only_see_their_own_tasks(client, auth_headers_factory):
     first_headers, _ = await auth_headers_factory("firstuser")
     second_headers, _ = await auth_headers_factory("seconduser")

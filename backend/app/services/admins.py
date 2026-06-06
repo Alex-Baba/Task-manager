@@ -6,8 +6,9 @@ from app.core.exceptions import not_found
 from app.models.admins import Admin
 from app.repositories.admins import AdminRepository
 from app.repositories.users import UserRepository
-from app.schemas.admins import AdminRead
+from app.schemas.admins import AdminRead, AdminUserRead
 from app.schemas.common import Message
+from app.schemas.users import UserRead
 
 
 class AdminService:
@@ -15,6 +16,18 @@ class AdminService:
         self.session = session
         self.repo = AdminRepository(session)
         self.user_repo = UserRepository(session)
+
+    async def get_users_with_admin_status(self) -> list[AdminUserRead]:
+        users = await self.user_repo.get_all_users()
+        admin_user_ids = await self.repo.get_admin_user_ids()
+
+        return [
+            AdminUserRead(
+                **UserRead.model_validate(user, from_attributes=True).model_dump(),
+                is_admin=user.id in admin_user_ids,
+            )
+            for user in users
+        ]
 
     async def grant_admin(self, *, user_id: UUID) -> AdminRead:
         user = await self.user_repo.get_user_by_id(user_id)

@@ -4,6 +4,29 @@ __pycache__/
 .vscode/
 .pytest_cache/
 .env
+.env.*
+!.env.example
+!**/.env.example
 .idea/
 .DS_Store
 .ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+coverage/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.vite/
+frontend/*.local
+frontend/.env
+frontend/.env.*
+frontend/coverage/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*

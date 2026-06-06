@@ -75,10 +75,14 @@ class TaskService:
         task = self.build_task(payload=payload, user_id=user_id)
         try:
             task = await self.repo.create_task(task)
+            for tag_id in payload.tag_ids or []:
+                await self._get_user_tag_or_404(user_id=user_id, tag_id=tag_id)
+                await self.repo.add_tag_to_task(task_id=task.id, tag_id=tag_id)
             await self.session.commit()
         except Exception:
             await self.session.rollback()
             raise
+        task = await self.repo.get_task_by_id(task.id)
         return TaskRead.model_validate(task, from_attributes=True)
 
     async def get_task(self, *, task_id: UUID, user_id: UUID) -> TaskRead:

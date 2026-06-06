@@ -25,6 +25,7 @@ async def test_admin_can_list_users(client, db_session, auth_headers_factory):
 
     assert response.status_code == 200
     assert response.json()[0]["id"] == user["id"]
+    assert response.json()[0]["is_admin"] is True
 
 
 async def test_category_creation_is_admin_only(client, auth_headers_factory):
