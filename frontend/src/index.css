@@ -661,6 +661,10 @@ p {
   z-index: 60;
 }
 
+.task-card:has(.tag-attach-menu) {
+  z-index: 70;
+}
+
 .task-card:hover {
   border-color: #b8c9bf;
   box-shadow: 0 18px 40px rgba(31, 41, 51, 0.1);
@@ -1043,7 +1047,7 @@ p {
 .edit-form {
   display: grid;
   grid-column: 1 / -1;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.8fr);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: 14px 16px;
   margin-top: 16px;
   border-top: 1px solid var(--border);
@@ -1058,23 +1062,35 @@ p {
   font-size: 15px;
 }
 
+.edit-form > .field {
+  align-content: start;
+}
+
 .edit-form .field textarea {
-  min-height: 112px;
+  min-height: 10px;
 }
 
-.edit-form .field input {
-  min-height: 52px;
-}
-
-.edit-form > .field:first-child input {
-  min-height: 42px;
+.edit-title-field textarea,
+.edit-description-field textarea {
+  height: 50px;
+  resize: vertical;
 }
 
 .form-grid {
   display: grid;
   grid-column: 1 / -1;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: 14px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.form-actions .button-primary {
+  min-width: 180px;
 }
 
 .edit-form-actions {
@@ -1118,7 +1134,7 @@ p {
 
 .tag-attach-menu {
   position: absolute;
-  z-index: 8;
+  z-index: 100;
   top: calc(100% + 8px);
   left: 0;
   display: grid;
@@ -1137,6 +1153,21 @@ p {
   gap: 8px;
 }
 
+.tag-picker {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  background: #ffffff;
+}
+
+.tag-picker .tag-attach-list {
+  max-height: 116px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
 .tag-option {
   min-height: 32px;
   border-radius: 999px;
@@ -1149,6 +1180,15 @@ p {
 
 .tag-option:hover {
   background: #d6ece5;
+}
+
+.tag-option.selected {
+  color: #ffffff;
+  background: var(--primary);
+}
+
+.tag-option.selected:hover {
+  background: var(--primary-strong);
 }
 
 .tag-attach-create {
@@ -1164,6 +1204,19 @@ p {
   color: var(--text-muted);
   font-size: 13px;
   font-weight: 800;
+}
+
+.tag-create-action {
+  width: fit-content;
+  color: var(--text-muted);
+  background: transparent;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: left;
+}
+
+.tag-create-action:hover {
+  color: var(--primary);
 }
 
 .empty-state {
@@ -1241,6 +1294,17 @@ p {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+.success-dialog-copy {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.success-icon {
+  flex: 0 0 auto;
+  color: var(--success);
 }
 
 .table-wrap {

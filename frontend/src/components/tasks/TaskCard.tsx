@@ -354,15 +354,15 @@ function TaskEditForm({
 
   return (
     <form className="edit-form" onSubmit={handleSubmit(onSubmit)}>
-      <div className="field">
+      <div className="field edit-title-field">
         <label htmlFor={`edit-title-${task.id}`}>Title</label>
-        <input id={`edit-title-${task.id}`} {...register('title')} />
+        <textarea id={`edit-title-${task.id}`} {...register('title')} />
         {errors.title ? (
           <span className="error-text">{errors.title.message}</span>
         ) : null}
       </div>
 
-      <div className="field">
+      <div className="field edit-description-field">
         <label htmlFor={`edit-description-${task.id}`}>Description</label>
         <textarea id={`edit-description-${task.id}`} {...register('description')} />
       </div>

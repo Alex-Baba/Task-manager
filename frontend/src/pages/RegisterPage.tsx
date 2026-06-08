@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AxiosError } from 'axios'
-import { UserPlus } from 'lucide-react'
+import { CheckCircle2, UserPlus } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
@@ -20,10 +20,12 @@ export function RegisterPage() {
   const { register: registerUser } = useAuth()
   const navigate = useNavigate()
   const [formError, setFormError] = useState<string | null>(null)
+  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false)
   const {
     formState: { errors, isSubmitting },
     handleSubmit,
     register,
+    reset,
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
     defaultValues: { username: '', email: '', password: '' },
@@ -33,7 +35,8 @@ export function RegisterPage() {
     try {
       setFormError(null)
       await registerUser(values)
-      navigate('/login', { replace: true })
+      reset()
+      setIsSuccessDialogOpen(true)
     } catch (error) {
       const message =
         error instanceof AxiosError
@@ -108,6 +111,35 @@ export function RegisterPage() {
           </p>
         </div>
       </section>
+
+      {isSuccessDialogOpen ? (
+        <div className="modal-backdrop" role="presentation">
+          <section
+            aria-labelledby="registration-success-title"
+            aria-modal="true"
+            className="modal"
+            role="dialog"
+          >
+            <div className="success-dialog-copy">
+              <CheckCircle2 className="success-icon" size={34} />
+              <div>
+                <h2 id="registration-success-title">Account created</h2>
+                <p>Your account is ready. You can now sign in and start managing tasks.</p>
+              </div>
+            </div>
+
+            <div className="modal-actions">
+              <button
+                className="button button-primary"
+                type="button"
+                onClick={() => navigate('/login', { replace: true })}
+              >
+                Go to login
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
     </main>
   )
 }

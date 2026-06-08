@@ -3,12 +3,14 @@ from app.ml.keyword_rules import calculate_urgency_score
 from app.ml.utils import calculate_days_until_due
 
 
-DEADLINE_WEIGHT = 0.45
-URGENCY_WEIGHT = 0.35
-CATEGORY_CONFIDENCE_WEIGHT = 0.20
+DEADLINE_WEIGHT = 0.40
+URGENCY_WEIGHT = 0.50
+CATEGORY_CONFIDENCE_WEIGHT = 0.10
 
-HIGH_PRIORITY_THRESHOLD = 0.7
+HIGH_PRIORITY_THRESHOLD = 0.68
 MEDIUM_PRIORITY_THRESHOLD = 0.4
+CRITICAL_URGENCY_THRESHOLD = 0.85
+STRONG_URGENCY_THRESHOLD = 0.7
 
 
 def clamp_score(score: float) -> float:
@@ -74,6 +76,22 @@ def calculate_prediction_score(
         + category_confidence * CATEGORY_CONFIDENCE_WEIGHT
     )
 
+    scoring_notes = []
+
+    if urgency["score"] >= CRITICAL_URGENCY_THRESHOLD:
+        smart_score = max(smart_score, HIGH_PRIORITY_THRESHOLD + 0.04)
+        scoring_notes.append("critical_urgency_floor_applied")
+
+    if deadline_bucket in {"overdue", "today"}:
+        smart_score = max(smart_score, MEDIUM_PRIORITY_THRESHOLD + 0.18)
+        scoring_notes.append("near_deadline_floor_applied")
+
+    if deadline_bucket in {"overdue", "today", "within_2_days"} and (
+        urgency["score"] >= STRONG_URGENCY_THRESHOLD
+    ):
+        smart_score = max(smart_score, HIGH_PRIORITY_THRESHOLD + 0.04)
+        scoring_notes.append("deadline_and_urgency_floor_applied")
+
     smart_score = round(clamp_score(smart_score), 3)
 
     predicted_priority = priority_from_score(smart_score)
@@ -88,14 +106,15 @@ def calculate_prediction_score(
             "urgency_score": URGENCY_WEIGHT,
             "category_confidence": CATEGORY_CONFIDENCE_WEIGHT,
         },
+        "scoring_notes": scoring_notes,
         "thresholds": {
             "medium": MEDIUM_PRIORITY_THRESHOLD,
             "high": HIGH_PRIORITY_THRESHOLD,
         },
         "formula": (
-            "deadline_score * 0.45 + urgency_score * 0.35 + category_confidence * 0.20"
+            "deadline_score * 0.40 + urgency_score * 0.50 + category_confidence * 0.10, with floors for critical urgency and near deadlines"
         ),
-        "explanation": "Priority calculated from deadline proximity, urgency keywords and ML category confidence.",
+        "explanation": "Priority calculated mostly from deadline proximity and urgency signals, with category confidence used only as a small support signal.",
     }
 
     return predicted_priority, smart_score, reasoning

@@ -499,7 +499,7 @@ export function DashboardPage() {
             <div className="insight-grid">
               <InsightMetric
                 isActive={selectedOverviewFilter === 'needs_prediction'}
-                label="Need prediction"
+                label="Awaiting AI"
                 value={aiInsights.needsPrediction}
                 onClick={() => toggleOverviewFilter('needs_prediction')}
               />
@@ -645,8 +645,10 @@ export function DashboardPage() {
           categories={categories}
           isCreateError={createTaskMutation.isError}
           isCreatePending={createTaskMutation.isPending}
+          isTagCreatePending={createTagMutation.isPending}
           tags={tags}
           onCancel={() => setIsCreateTaskOpen(false)}
+          onCreateTag={(name) => createTagMutation.mutateAsync(name)}
           onSubmit={async (values) => {
             await createTaskMutation.mutateAsync(values)
             setIsCreateTaskOpen(false)
@@ -661,14 +663,18 @@ function CreateTaskDialog({
   categories,
   isCreateError,
   isCreatePending,
+  isTagCreatePending,
   onCancel,
+  onCreateTag,
   onSubmit,
   tags,
 }: {
   categories: Awaited<ReturnType<typeof getCategories>>
   isCreateError: boolean
   isCreatePending: boolean
+  isTagCreatePending: boolean
   onCancel: () => void
+  onCreateTag: (name: string) => Promise<Tag>
   onSubmit: (values: TaskForm) => Promise<void>
   tags: Tag[]
 }) {
@@ -689,18 +695,12 @@ function CreateTaskDialog({
           categories={categories}
           isCreateError={isCreateError}
           isCreatePending={isCreatePending}
-          isTagCreatePending={false}
-          showTagCreation={false}
+          isTagCreatePending={isTagCreatePending}
           tags={tags}
-          onCreateTag={async () => undefined}
+          onCancel={onCancel}
+          onCreateTag={onCreateTag}
           onSubmit={onSubmit}
         />
-
-        <div className="modal-actions">
-          <button className="button button-ghost" type="button" onClick={onCancel}>
-            Cancel
-          </button>
-        </div>
       </section>
     </div>
   )
