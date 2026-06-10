@@ -6,7 +6,7 @@ import joblib
 MODEL_PATH = (
     Path(__file__).resolve().parents[2]
     / "ml_models"
-    / "task_category_model_datasetv6.joblib"
+    / "task_category_model_datasetv6_no_leakage.joblib"
 )
 
 

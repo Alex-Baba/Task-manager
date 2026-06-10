@@ -5,7 +5,7 @@ from app.ml.scoring import calculate_prediction_score
 from app.schemas.task_predictions import PredictionResult
 
 
-MODEL_VERSION = "task_category_model_datasetv6"
+MODEL_VERSION = "task_category_model_datasetv6_no_leakage"
 MIN_CATEGORY_CONFIDENCE = 0.30
 MIN_CATEGORY_MARGIN = 0.05
 
